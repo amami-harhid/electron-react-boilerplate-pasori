@@ -95,12 +95,12 @@ export class CardReader {
                 // 連続してタッチイベントが起こるので、同一UIDの場合は
                 // タッチイベント連続を回避する。
                 // カードリリースされた後であればタッチイベントを処理可能。
-                return;        
+                return;
             }
             this.pre_uid = uid;
             if (uid && uid.length > 0) {
+                this._logger.debug('CardReader ==> send message uid=', uid);
                 const browser = getMainBrowser();
-                //console.log('CardReader ==> send message uid=', uid);
                 browser.webContents.send(CardReaderID.CARD_TOUCH, uid);
                 const msg = `CARD TOUCH uid=(${uid})`;
                 this._logger.debug(msg);
