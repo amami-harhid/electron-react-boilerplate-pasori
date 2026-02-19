@@ -1,0 +1,21 @@
+{
+  "name": "electron-react-boilerplate",
+  "version": "1.0.0",
+  "description": "A foundation for scalable desktop apps",
+  "keywords": [
+    "sqlite3",
+    "pcsclite"
+  ],
+  "license": "MIT",
+  "author": "Electron React Boilerplate Maintainers, @amami-harhid",
+  "main": "./dist/main/main.js",
+  "scripts": {
+    "rebuild": "node -r ts-node/register ../../.erb/scripts/electron-rebuild.js",
+    "postinstall": "npm run rebuild && npm run link-modules",
+    "link-modules": "node -r ts-node/register ../../.erb/scripts/link-modules.ts"
+  },
+  "dependencies": {
+    "sqlite3": "^5.1.7",
+    "@pokusew/pcsclite": "^0.6.0"
+  }
+}

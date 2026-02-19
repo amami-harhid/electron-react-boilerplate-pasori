@@ -1,0 +1,18 @@
+{
+	"PAGE_TITLE": "入退室チェッカー(Pasori)",
+
+	"SMTP_SERVER": "smtp.gmail.com",
+	"SMTP_PORT": 587,
+	"SMPT_SECURE": false,
+	"SMTP_ACCOUNT_USER": "**************",
+	"SMTP_ACCOUNT_PASSWORD":"*************",
+
+	"DB_PATH": "Y:/9995_pasori/database",
+	"DB_NAME": "pasori.db",
+
+	"MAIL_FROM": "\"iTeen_Pasori_System\" <pasori@mirai-logic.com>",
+	"MAIL_SUBJECT_IN": "入室連絡(iTeen奄美ティダモール校)",
+	"MAIL_SUBJECT_OUT": "退室連絡(iTeen奄美ティダモール校)",
+	"MAIL_TEXT_IN": "入室",
+	"MAIL_TEXT_OUT": "退室"
+}

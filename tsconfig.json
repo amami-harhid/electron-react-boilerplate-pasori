@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "incremental": true,
+    "target": "es2022",
+    "module": "node16",
+    "lib": ["dom", "es2022"],
+    "jsx": "react-jsx",
+    "strict": true,
+    "sourceMap": true,
+    "moduleResolution": "node16",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "outDir": ".erb/dll",
+    "paths": {
+      "sqlite3": ["./release/app/node_modules/sqlite3"],
+      "@pokusew/pcsclite": ["./release/app/node_modules/@pokusew/pcsclite"],
+      "@/*": ["./src/*"],
+      "@sounds": ["./assets/sounds"]
+    }
+  },
+  "exclude": ["test", "release/build", "release/app/dist", ".erb/dll"]
+}

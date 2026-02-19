@@ -1,0 +1,178 @@
+.container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../../../assets/Garrulus_lidthi.png'),url('../../../assets/flower-back1127.jpg');
+    background-repeat: no-repeat;
+    background-position: center;
+    z-index: -1; /* 背景として配置 */
+    opacity: 1.0;
+}
+.card {
+    width: 100%;
+    text-align: center;
+}
+.card p {
+    font-weight: bold;
+    font-size: 200%;
+}
+.in {
+    color: red;
+}
+
+.out {
+    color: blue;
+}
+h1 {
+    opacity: 1.0;
+    width: 100%;
+    text-align: center;
+}
+.pageTitle {
+    font-size: 300%;
+    font-weight: bolder;
+    color: gold;
+}
+.modal {
+    opacity: 1.0;
+    display: none; /* 初期状態では非表示 */
+    position: fixed; /* 画面に固定 */
+    z-index: 1; /* 他の要素より手前に表示 */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* 内容が多い場合にスクロール可能にする */
+    background-color: rgba(0, 0, 0, 0.7); /* 背景を暗くする */
+    justify-content: center; /* 中央寄せ用 */
+    align-items: center; /* 中央寄せ用 */
+}
+.modal_members {
+    opacity: 1.0;
+    display: none; /* 初期状態では非表示 */
+    position: fixed; /* 画面に固定 */
+    z-index: 1; /* 他の要素より手前に表示 */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* 内容が多い場合にスクロール可能にする */
+    background-color: rgba(0, 0, 0, 0.7); /* 背景を暗くする */
+    justify-content: center; /* 中央寄せ用 */
+    align-items: center; /* 中央寄せ用 */
+}
+
+.modal_manager {
+    opacity: 1.0;
+    position: fixed; /* 画面に固定 */
+    z-index: 1; /* 他の要素より手前に表示 */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* 内容が多い場合にスクロール可能にする */
+    background-color: rgba(0, 0, 0, 0.7); /* 背景を暗くする */
+    justify-content: center; /* 中央寄せ用 */
+    align-items: center; /* 中央寄せ用 */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 10% auto auto auto; /* top=10% */
+    padding: 30px;
+    border: 1px solid #888;
+    width: 90%; /* 幅の調整 */
+    max-width: 900px; /* 最大幅 */
+    border-radius: 8px;
+    position: relative;
+    box-shadow: 0 5px 15px rgba(0.7,0.7,0.7,0.1);
+}
+.confirm{
+    display: none;
+    position: fixed;
+    background: rgba(0,0,0,.3);
+    top:0;
+    left:0;
+    bottom: 0;
+    right: 0;
+    z-index: 100;
+}
+.confirm > div{
+    border: 5px double purple;
+    box-shadow: 5px 5px 3px rgba(0,0,0,.2);
+    border-radius: 5%;
+    padding: 5px;
+    background: pink;
+    position: absolute;
+    width: 250px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.card_message {
+
+    font-size: 120%;
+    font-weight: bolder;
+    color: red;
+    justify-content: center; /* 中央寄せ用 */
+    align-items: center; /* 中央寄せ用 */
+
+}
+.member_appTable {
+    border: 1px solid blue;
+    border-collapse: separate; /* 二重線を一本化 */
+    border-spacing: 10px; /* セル間隔 */
+    width:100%;
+}
+.member_appTable th {
+    font-size: 80%;
+    border: 1px solid blue;
+}
+.member_appTable th {
+    background-color: black;
+    color: whitesmoke;
+    font-weight: bolder;
+}
+.member_appTable td {
+    font-size: 80%;
+    border: 1px solid blue;
+}
+
+.hist_appTable {
+    border: 1px solid black;
+    border-collapse: collapse; /* 二重線を一本化 */
+    border-spacing: 10px; /* セル間隔 */
+    width:90%;
+}
+.hist_appTable th, td {
+    font-size: 80%;
+    border: 1px dashed blue;
+}
+
+.card p.errorMessage {
+    font-weight: bold;
+    font-size: 150%;
+}
+
+.errorMessage {
+    color: #ff0000;
+    font-weight: bold;
+}
+
+.hist_selectedDate {
+    margin-bottom: 0;
+}
+
+.modal-button-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+.customRedIcon {
+  color: red; /* あるいは、任意の色コード */
+}
