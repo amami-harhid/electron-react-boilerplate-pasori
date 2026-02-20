@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import { HashRouter as Router, Routes, Route, useNavigate } from 'react-router-dom';
 import { ReaderIsReadyContextProvider, useReaderIsReadyContext } from './pages/readerIsReadyProvider';
 import { Masterhead } from './pages/mastheads/mainMasthead';
-import { routePath } from './routePath';
+import { routePagePath } from './routePath';
 //import { HomePage } from './pages/homePage';
 import { TopPage } from './pages/topPage';
 //import { StopPage } from './pages/stopPage';
@@ -31,7 +31,7 @@ const IPCNavigator = () => {
     )
 }
 export function App() {
-    const [path, ] = useState<typeof routePath>(routePath);
+    const [path, ] = useState<typeof routePagePath>(routePagePath);
     return (
         <>
         <ReaderIsReadyContextProvider>

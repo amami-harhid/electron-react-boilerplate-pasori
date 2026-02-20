@@ -54,11 +54,11 @@ const get = <T>(query:string, params:any[]=[]):Promise<T> => {
         });
     });
 }
-export type Exec = (...args:any[]) => Promise<any>;
-export type Method = {
-    name: string,
-    exec: Exec,
-}
+// export type Exec2 = (...args:any[]) => Promise<any>;
+// export type Method = {
+//     name: string,
+//     exec: Exec2,
+// }
 export const exec = {
     all: all,
     get: get,

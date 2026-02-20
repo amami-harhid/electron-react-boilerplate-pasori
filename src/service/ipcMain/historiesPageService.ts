@@ -3,7 +3,7 @@ const ipcMain = electron.ipcMain;
 import { LoggerRef } from '@/log/loggerReference';
 const logger = LoggerRef.logger;
 
-import type { HistoriesMemberRow } from '@/db/histories/historiesRow';
+import type { HistoriesMemberRow } from '@/db/historiesRow';
 
 import * as IpcServices from '@/main/channel/ipcService';
 

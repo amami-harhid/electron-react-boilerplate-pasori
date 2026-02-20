@@ -3,7 +3,7 @@ import { MaterialReactTable } from 'material-react-table';
 import * as DateUtils from '@/utils/dateUtils';
 import { historiesPageService } from "@/service/ipcRenderer/historiesListPageRenderer";
 import * as PasoriCard from '@/renderer/pages/pasoriCard/pasoriCard';
-import { HistoriesMemberRow } from '@/db/histories/historiesRow';
+import { HistoriesMemberRow } from '@/db/historiesRow';
 type TABLE_ROW = {
     no:number,
     fcno:string,

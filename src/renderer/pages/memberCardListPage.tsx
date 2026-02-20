@@ -168,11 +168,11 @@ export function MemberCardListPage () {
 
     }
     const pasoriCardListenStart = () => {
-        console.log('pasoriCardListen Start')
+        //console.log('pasoriCardListen Start')
 
         // カードタッチしたときの処理
         PasoriCard.onTouch(async (idm:string)=>{
-            console.log('memberCardListPage, PasoriCard.onTouch idm=',idm);
+            //console.log('memberCardListPage, PasoriCard.onTouch idm=',idm);
 
             pasoriCardReleaseListenStart(); //タッチした直後にカードリリースをリッスン開始
             pageInfo.tempData.idm = idm;
@@ -180,7 +180,7 @@ export function MemberCardListPage () {
             // カード情報とともにメンバー情報を取得
             // タッチされたIDMがどこに紐づいているのかを知るためにIDM指定で取り出す
             const idmRow = await memberCardListService.getIdm(idm);
-            console.log('idmRow=',idmRow)
+            //console.log('idmRow=',idmRow)
             if(idmRow) {
                 if(idmRow.fcno != fcno) {
                     // IDMが紐づいたFCNOが異なるとき
@@ -200,7 +200,7 @@ export function MemberCardListPage () {
             }else{
                 // IDMは未登録
                 const result = await memberCardListService.setIdmByFcno(fcno, idm);
-                console.log('CardTouch result=',result);
+                //console.log('CardTouch result=',result);
                 if(result){
                     pageInfo.textCardRegistModal = '登録完了';
                     pageInfo.isCardRegistDone = true; // カード登録完了
@@ -222,7 +222,7 @@ export function MemberCardListPage () {
     /** 一覧で登録ボタンを押したときの処理 */ 
     const handleRegist = (row: MRT_Row<TABLE_ROW> ) => {
         // カードIDM登録待ちモーダルを表示する
-        console.log('memberCardListPage, handleRegist');
+        //console.log('memberCardListPage, handleRegist');
         pageInfo.textCardRegistModal = '登録したいカードでタッチ'
         pageInfo.isCardRegistModalOpen = true;
         pageInfo.isCardRegistDone = false; // カード登録未了
@@ -242,7 +242,7 @@ export function MemberCardListPage () {
     };
 
     const membersToTableData = async ():Promise<void> => {
-        console.log('membersToTableData start')
+        //console.log('membersToTableData start')
         const deletedIncluding = pageInfo.checkbox.includes(CHECK_BOX.LOGICAL_DELETE);
         const rows = await memberCardListService.getMembers(deletedIncluding);
         const _data:TABLE_ROW[] = [];
@@ -261,7 +261,7 @@ export function MemberCardListPage () {
             }
             _data.push(newRow);
         }
-        console.log('_data=',_data);
+        //console.log('_data=',_data);
         pageInfo.tableData = _data;
         updatePageInfo(pageInfo);
     }
@@ -289,7 +289,7 @@ export function MemberCardListPage () {
         updatePageInfo(pageInfo);
     }
     const pasoriCardListenClear = ()=>{
-        console.log('pasoriCardListenClear')
+        //console.log('pasoriCardListenClear')
         // カードが離れたときの処理
         PasoriCard.onRelease(async()=>{});
         // カードタッチしたときの処理
@@ -304,6 +304,42 @@ export function MemberCardListPage () {
     useEffect(() => {
         reload();
     },[pageInfo.counter]);
+
+    /** ACTION 登録ボタン */ 
+    const actionRegistButton = (row: MRT_Row<TABLE_ROW>) => {
+        if(row.original.idm != '' || row.original.soft_delete === 1) {
+            return (
+                <IconButton disabled={true}>
+                    <AddCardIcon />
+                </IconButton>
+            )
+        }else{
+            return (
+                <Tooltip title="登録" arrow placement="top">
+                    <IconButton onClick={() => handleRegist(row)}>
+                        <AddCardIcon />
+                    </IconButton>
+                </Tooltip>
+            )
+        }
+    };
+    const actionClearButton = (row: MRT_Row<TABLE_ROW>) => {
+        if(row.original.idm != '' || row.original.soft_delete === 1) {
+            return (
+                <Tooltip title="解除" arrow placement="top">
+                    <IconButton color="error" onClick={() => handleRemove(row)}>
+                        <ClearIcon />
+                    </IconButton>
+                </Tooltip>
+            )
+        }else{
+            return (
+                <IconButton color="error" disabled={true}>
+                    <ClearIcon />
+                </IconButton>
+            )
+        }
+    }
 
     return (
         <>
@@ -336,22 +372,9 @@ export function MemberCardListPage () {
                     positionActionsColumn="last"
                     renderRowActions={({ row }) => (
                         <Box sx={{ display: 'flex', gap: '0.2rem' }}>
-                            <Tooltip title="登録" arrow placement="top">
-                                <IconButton onClick={() => handleRegist(row)}
-                                        disabled={row.original.idm != '' || row.original.soft_delete === 1}
-                                    >
-                                    <AddCardIcon />
-                                </IconButton>
-                            </Tooltip>
-                            <Tooltip title="解除" arrow placement="top">
-                                <IconButton color="error" onClick={() => handleRemove(row)}
-                                        disabled={row.original.idm == ''}
-                                    >
-                                    <ClearIcon />
-                                </IconButton>
-                            </Tooltip>
+                            {actionRegistButton(row)}
+                            {actionClearButton(row)}
                         </Box>
-
                     )}
                 />
             </div>

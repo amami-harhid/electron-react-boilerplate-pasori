@@ -1,7 +1,7 @@
 import * as IpcServices from '@/main/channel/ipcService';
-import { IdmRow } from '@/db/idms/idmRow';
-import { MemberIdmRow } from '@/db/members/memberIdmRow';
-import { memberCardListPageServiceMethods } from '../ipcMain/memberCardListServiceMethods';
+import { IdmRow } from '@/db/idmRow';
+import { MemberIdmRow } from '@/db/memberIdmRow';
+import { memberCardListPageServiceMethods } from '@/service/ipcMain/memberCardListServiceMethods';
 const methods = memberCardListPageServiceMethods;
 const ipcRenderer = window.electronService.ipcServiceRenderer;
 

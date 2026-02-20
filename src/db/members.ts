@@ -1,14 +1,16 @@
 
-import { exec } from "../dbCommon";
+import { exec } from "./dbCommon";
 
-export const Idms = {
+export const Members = {
     createTable: 
         async function(cb:CallableFunction):Promise<number>{
             const query = 
-            `CREATE TABLE IF NOT EXISTS idms (
+            `CREATE TABLE IF NOT EXISTS members (
                 [id] integer primary key autoincrement,
                 [fcno] text UNIQUE,
-                [idm] text,
+                [name] text,
+                [kana] text,
+                [mail] text,
                 [soft_delete] boolean,
                 [date_time] datetime
             )`;
@@ -16,7 +18,7 @@ export const Idms = {
         },
     dropTable:
         async function dropTable(cb:CallableFunction):Promise<number>{
-            const query = `DROP TABLE IF EXISTS idms`;
+            const query = `DROP TABLE IF EXISTS members`;
             return exec.run(query, cb);
         },
 

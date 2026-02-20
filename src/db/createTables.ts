@@ -3,10 +3,10 @@ DotEnv.config();
 import { envIs } from '@/main/util';
 import Sqlite from 'sqlite3';
 import { DatabaseRef } from './dbReference';
-import { Members } from './members/members';
-import { Idms } from './idms/idms';
-import { Histories } from '../db/histories/histories';
-import { MemberRow } from './members/memberRow';
+import { Members } from './members';
+import { Idms } from './idms';
+import { Histories } from './histories';
+import { MemberRow } from './memberRow';
 import { dbRun } from '@/service/ipcMain/utils/serviceUtils';
 //---- DB TABLE INSERT DUMMY DATA
 const memberDatas:MemberRow[] = [

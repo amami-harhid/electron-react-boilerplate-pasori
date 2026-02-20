@@ -1,4 +1,5 @@
 import { BASEPATH_DEV } from "./soundConf";
+import { VOLUME } from "./soundConf";
 import { soundRecords } from './soundsRecord';
 
 /** Audioのキャッシュ */
@@ -27,7 +28,7 @@ export const preload = async () => {
 };
 
 /** 音を鳴らす */
-export const play = async({ name }: { name: string }) => {
+export const play = async({ name }: { name: string }, { volume }: { volume: number } = {volume: VOLUME}) => {
     const sound = name.toUpperCase();
 	//console.info(`Playing sound: ${name}`);
 
@@ -38,7 +39,18 @@ export const play = async({ name }: { name: string }) => {
 	}
 
 	if (audio) {
+		if(volume){
+			audio.volume = volume;
+		}
 		audio.currentTime = 0;
-		audio.play().catch(console.error);
+		return new Promise<void>((resolve,reject)=>{
+			audio.play().then(()=>{
+				console.log('sound done =',sound);
+				resolve();
+			}).catch(()=>{
+				reject();
+			});
+
+		})
 	}
 };

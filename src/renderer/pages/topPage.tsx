@@ -1,9 +1,8 @@
 import { useEffect, useState, useContext } from "react";
-import { Button } from "@mui/material";
 import { toast } from 'sonner';
 import { topPageService } from '@/service/ipcRenderer/topPageRenderer';
 import * as PasoriCard from '@/renderer/pages/pasoriCard/pasoriCard';
-import { HistoriesMemberIdmRow } from "@/db/histories/historiesRow";
+import { HistoriesMemberIdmRow } from "@/db/historiesRow";
 import { type ReaderIsReadyState, ReaderIsReady } from './readerIsReadyProvider';
 import * as Sounds from "@/renderer/lib/sounds";
 
@@ -156,9 +155,12 @@ export function TopPage() {
         });
     }
     const soundInitPlay = async () => {
-        await Sounds.play({name:"CARD_NG"});
-        await Sounds.play({name:"CARD_IN"});
-        await Sounds.play({name:"CARD_OUT"});
+        console.log('CARD_IN start');
+        await Sounds.play({name:"CARD_IN"},{volume:0.9});
+        console.log('CARD_OUT start');
+        await Sounds.play({name:"CARD_OUT"},{volume:0.1});
+        console.log('CARD_NG start');
+        await Sounds.play({name:"CARD_NG"},{volume:0.1});
     }
     // mainMasterhead.tsx でリーダー接続状況を検知している
     // Provider でグローバル共有している。

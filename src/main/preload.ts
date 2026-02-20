@@ -1,42 +1,11 @@
-import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
-import * as IpcServices from './channel/ipcService';
+import { contextBridge, ipcRenderer } from 'electron';
+import * as IpcServices from '@/main/channel/ipcService';
 import {CardReaderID } from '@/icCard/cardEventID';
 export type Channels = IpcServices.IpcChannelValOfService;
 export type ServiceChannels = IpcServices.IpcServiceChannelValOfService;
 export type ServiceMailChannels = IpcServices.IpcMailServiceChannelsValOfService;
 export type ServiceTitleChannels = IpcServices.IpcTitleServiceChannelsValOfServie;
 
-const electronHandler = {
-  ipcRenderer: {
-    sendMessage(channel: Channels, methodName:string, ...args: unknown[]) {
-      ipcRenderer.send(channel, methodName, ...args);
-    },
-    on(channel: Channels, func: (...args: unknown[]) => void) {
-      const subscription = (_event: IpcRendererEvent, ...args: unknown[]) =>
-        func(...args);
-      ipcRenderer.on(channel, subscription);
-
-      return () => {
-        ipcRenderer.removeListener(channel, subscription);
-      };
-    },
-    once(channel: Channels, func: (...args: unknown[]) => void) {
-        ipcRenderer.once(channel, (_event, ...args) => {
-            const reply = func(...args);
-            // 中途半端　、たぶん使わない。
-        });
-    },
-    asyncOnce<T>(channel: Channels):Promise<T> {
-      return new Promise<T>( (resolve)=>{
-        ipcRenderer.once(channel, (_event, arg:T) => {
-            //const reply = func(arg);
-            resolve(arg);
-        })
-      });
-
-    },
-  },
-};
 const electronServiceHandler = {
   ipcServiceRenderer: {
     send(channel: ServiceChannels, methodName:string, ...args: unknown[]) {
@@ -137,7 +106,7 @@ const electronMailServiceHandler = {
     },
   },
 };
-contextBridge.exposeInMainWorld('electron', electronHandler);
+//contextBridge.exposeInMainWorld('electron', electronHandler);
 contextBridge.exposeInMainWorld('navigate', electronNavigate);
 contextBridge.exposeInMainWorld('pasoriCard', electronPasoriCard);
 contextBridge.exposeInMainWorld('electronService', electronServiceHandler);
@@ -169,7 +138,7 @@ contextBridge.exposeInMainWorld('buildEnv', buildEnv);
 
 
 
-export type ElectronHandler = typeof electronHandler;
+//export type ElectronHandler = typeof electronHandler;
 export type ElectronNavigate = typeof electronNavigate;
 export type ElectronPasoriCard = typeof electronPasoriCard;
 export type ElectronServiceHandler = typeof electronServiceHandler;

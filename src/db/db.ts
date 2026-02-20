@@ -1,10 +1,10 @@
 import {app} from 'electron';
 import { ApConfig } from '@/conf/storeImporter.js';
 import path from 'path';
-import { Logger } from "../log/logger";
+import { Logger } from "@/log/logger";
 import sqlite from 'sqlite3';
 const sqlite3 = sqlite.verbose();
-import webpackPaths from '../../.erb/configs/webpack.paths';
+import webpackPaths from '@webpack.paths';
 
 import { envIs } from '@/main/util'
 

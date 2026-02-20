@@ -27,17 +27,12 @@ LoggerRef.logger = logger;
 import { db } from "@/db/db";
 import { DatabaseRef } from '@/db/dbReference';
 DatabaseRef.db = db;
-//import { createTables } from '@/db/createTables';
-
-//import { CardReader } from '@/icCard/icCardReader';
-
-//const reader = new CardReader()
-//reader.ready();
 
 let mainWindow: BrowserWindow | null = null;
 
-
+/** Debug指定のときはTrue( .env 内で指定、参照：src/main/util.ts 内) */
 const isDebug = envIs.debug;
+/** 本番環境指定のときはTrue( .env 内で指定、参照：src/main/util.ts 内) */
 const isProd = envIs.prod;
 if ( isProd ) {
   const sourceMapSupport = require('source-map-support');
@@ -63,6 +58,7 @@ const installExtensions = async () => {
     .catch(console.log);
 };
 
+/** ウィンドウ作成 */
 const createWindow = async () => {
     if (isDebug) {
         await installExtensions();
@@ -76,6 +72,7 @@ const createWindow = async () => {
         return path.join(RESOURCES_PATH, ...paths);
     };
 
+    // Assetフォルダーを通知する処理
     const assetsPath = getAssetPath();
     ipc_assets_path(assetsPath);
 
@@ -108,9 +105,6 @@ const createWindow = async () => {
 
     });
 
-    //---- DB TABLE CREATE IF NOT EXITST
-    //await createTables(db);
-
     mainWindow.on('closed', () => {
         mainWindow = null;
     });
@@ -128,7 +122,6 @@ const createWindow = async () => {
 /**
  * Add event listeners...
  */
-
 app.on('window-all-closed', () => {
     // Respect the OSX convention of having the application in memory even
     // after all windows have been closed
@@ -164,6 +157,10 @@ process.on('uncaughtException', function (error) {
     if(error.message){
       // カードリーダーUSB接続が断続的に切れるときのエラー
       if(error.message.includes('SCardGetStatusChange')) {
+        // システム異常を起こさないように努力したが、どうしようもない
+        // ときのためにここでキャッチするようにした。
+        // キャッチしたとしても自動復旧はしないので、異常発生を知るだけ
+        // である。
         logger.error('in Main')
         logger.error("error.stack=",error.stack)
         logger.debug(error);
@@ -178,5 +175,3 @@ process.on('uncaughtException', function (error) {
     logger.error("error.stack=",error.stack)
     logger.error(error);
 });
-
-//reader.ready();

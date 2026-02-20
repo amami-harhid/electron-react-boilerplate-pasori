@@ -1,7 +1,7 @@
-import type { MemberIdmRow } from '@/db/members/memberIdmRow';
-import type { IdmRow } from '@/db/idms/idmRow';
+import type { MemberIdmRow } from '@/db/memberIdmRow';
+import type { IdmRow } from '@/db/idmRow';
 
-import { dbRun, dbAll, dbGet, transactionBase } from './utils/serviceUtils';
+import { dbRun, dbAll, dbGet } from './utils/serviceUtils';
 
 const getIdm = async(idm:string): Promise<MemberIdmRow> =>{
     const query =

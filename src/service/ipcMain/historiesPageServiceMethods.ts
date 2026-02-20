@@ -1,4 +1,4 @@
-import type { HistoriesMemberRow } from '@/db/histories/historiesRow';
+import type { HistoriesMemberRow } from '@/db/historiesRow';
 import * as DateUtils from '../../utils/dateUtils';
 import { dbAll } from './utils/serviceUtils';
 

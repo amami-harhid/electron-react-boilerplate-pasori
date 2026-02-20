@@ -1,4 +1,4 @@
-import { exec } from "../dbCommon";
+import { exec } from "./dbCommon";
 
 export const Histories = {
     createTable: 

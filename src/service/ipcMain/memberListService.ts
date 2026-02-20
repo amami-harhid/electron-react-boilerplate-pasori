@@ -3,8 +3,8 @@ const ipcMain = electron.ipcMain;
 import { LoggerRef } from '@/log/loggerReference';
 const logger = LoggerRef.logger;
 
-import type { MemberRow } from '@/db/members/memberRow';
-import type { MemberIdmRow } from '@/db/members/memberIdmRow';
+import type { MemberRow } from '@/db/memberRow';
+import type { MemberIdmRow } from '@/db/memberIdmRow';
 import * as IpcServices from '@/main/channel/ipcService';
 
 import { memberListPageServiceMethods } from './memberListServiceMethods';

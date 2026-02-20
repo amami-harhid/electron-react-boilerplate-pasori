@@ -1,7 +1,6 @@
 import * as IpcServices from '@/main/channel/ipcService';
-import { HistoriesMemberIdmRow } from '@/db/histories/historiesRow';
-
-import { topPageServiceMethods } from '../ipcMain/topPageServiceMethods';
+import { HistoriesMemberIdmRow } from '@/db/historiesRow';
+import { topPageServiceMethods } from '@/service/ipcMain/topPageServiceMethods';
 
 const ipcRenderer = window.electronService.ipcServiceRenderer;
 const ipcMailRenderer = window.electronMailService.ipcMailServiceRenderer;

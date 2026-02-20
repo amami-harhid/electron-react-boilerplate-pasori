@@ -1,6 +1,7 @@
 import nodemailer from 'nodemailer';
 import { ApConfig } from '@/conf/confUtil';
 import { Logger } from '@/log/logger';
+import { dateDateTime } from '@/utils/dateUtils';
 const logger = new Logger();
 
 const SMTP_SERVER = (ApConfig.has("SMTP_SERVER"))?
@@ -52,13 +53,29 @@ const SEND_MAILER =
             pass: SMTP_ACCOUNT_PASSWORD // パスワード
         }
     })
+    const now = new Date();
+    const currentDateTime = dateDateTime(now)
     // メール内容の設定
     let mailOptions = {
         from: MAIL_FROM, // 送信元
         to: mail_to, // 送信先
         subject: mail_subject, // 件名
-        text: `${name}さんが${text}しました`, // テキスト形式の本文
-        html: `<p><strong>${name}</strong>さんが${text}しました</p>` // HTML形式
+        text: 
+`${name}さんが${text}しました
+(${currentDateTime})
+
+※このメールには返信できません
+
+============================
+iTeen奄美ティダモール校
+amami-thidamall@iteen.jp`, // テキスト形式の本文
+
+        html: `<p><strong>${name}</strong>さんが${text}しました</p>
+            <p>(${currentDateTime})</p>
+            <p>※このメールには返信できません</p>
+            <p>==========================</p>
+            <p>iTeen奄美ティダモール校</p>
+            <p>amami-thidamall@iteen.jp</p>` // HTML形式
     }
 
     try {

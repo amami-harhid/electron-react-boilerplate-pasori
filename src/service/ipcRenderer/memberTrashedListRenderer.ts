@@ -1,6 +1,6 @@
 import * as IpcServices from '@/main/channel/ipcService';
-import { MemberRow } from '@/db/members/memberRow';
-import { memberTrashedListServiceMethods } from '../ipcMain/memberTrashedListServiceMethods';
+import { MemberRow } from '@/db/memberRow';
+import { memberTrashedListServiceMethods } from '@/service/ipcMain/memberTrashedListServiceMethods';
 const methods = memberTrashedListServiceMethods;
 const ipcRenderer = window.electronService.ipcServiceRenderer;
 

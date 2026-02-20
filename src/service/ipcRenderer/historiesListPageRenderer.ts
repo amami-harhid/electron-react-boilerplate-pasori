@@ -1,6 +1,6 @@
 import * as IpcServices from '@/main/channel/ipcService';
-import { HistoriesMemberRow } from '@/db/histories/historiesRow';
-import { historiesPageServiceMethods } from '../ipcMain/historiesPageServiceMethods';
+import { HistoriesMemberRow } from '@/db/historiesRow';
+import { historiesPageServiceMethods } from '@/service/ipcMain/historiesPageServiceMethods';
 const methods = historiesPageServiceMethods;
 const ipcRenderer = window.electronService.ipcServiceRenderer;
 

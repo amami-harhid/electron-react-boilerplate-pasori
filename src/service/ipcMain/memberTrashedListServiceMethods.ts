@@ -1,4 +1,4 @@
-import type { MemberRow } from '@/db/members/memberRow';
+import type { MemberRow } from '@/db/memberRow';
 import { dbRun, dbAll, transactionBase } from './utils/serviceUtils';
 import { LoggerRef } from '@/log/loggerReference';
 const logger = LoggerRef.logger;

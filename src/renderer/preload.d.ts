@@ -1,5 +1,4 @@
 import {
-  ElectronHandler,
   ElectronNavigate,
   ElectronPasoriCard,
   ElectronProduct,
@@ -9,9 +8,7 @@ import {
  } from '@/main/preload';
 
 declare global {
-  // eslint-disable-next-line no-unused-vars
   interface Window {
-    electron: ElectronHandler;
     navigate: ElectronNavigate;
     pasoriCard: ElectronPasoriCard;
     buildEnv: ElectronProduct;

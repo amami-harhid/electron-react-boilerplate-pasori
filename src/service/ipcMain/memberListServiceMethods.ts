@@ -1,5 +1,5 @@
-import type { MemberRow } from '@/db/members/memberRow';
-import type { MemberIdmRow } from '@/db/members/memberIdmRow';
+import type { MemberRow } from '@/db/memberRow';
+import type { MemberIdmRow } from '@/db/memberIdmRow';
 
 import { dbRun, dbAll, dbGet, transactionBase } from './utils/serviceUtils';
 

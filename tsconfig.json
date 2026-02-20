@@ -17,7 +17,8 @@
       "sqlite3": ["./release/app/node_modules/sqlite3"],
       "@pokusew/pcsclite": ["./release/app/node_modules/@pokusew/pcsclite"],
       "@/*": ["./src/*"],
-      "@sounds": ["./assets/sounds"]
+      "@sounds": ["./assets/sounds"],
+      "@webpack.paths": ["./.erb/configs/webpack.paths"]
     }
   },
   "exclude": ["test", "release/build", "release/app/dist", ".erb/dll"]

@@ -8,7 +8,7 @@ import DeleteIcon from '@mui/icons-material/DeleteForever';
 import { toast } from 'sonner';
 
 import { memberTrashedListService } from "@/service/ipcRenderer/memberTrashedListRenderer";
-import { MemberRow } from "@/db/members/memberRow";
+import { MemberRow } from "@/db/memberRow";
 
 import * as PasoriCard from '@/renderer/pages/pasoriCard/pasoriCard';
 

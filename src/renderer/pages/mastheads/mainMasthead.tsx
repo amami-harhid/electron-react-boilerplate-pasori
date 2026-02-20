@@ -1,7 +1,7 @@
 import { useEffect, useState, useContext } from "react";
 import { Button } from "@mui/material";
 import { titleService } from "@/service/ipcRenderer/titleRenderer";
-import { type ReaderIsReadyState, ReaderIsReady } from '../readerIsReadyProvider';
+import { type ReaderIsReadyState, ReaderIsReady } from '@/renderer/pages/readerIsReadyProvider';
 
 /** ページヘッダー部 */
 export const Masterhead = () => {

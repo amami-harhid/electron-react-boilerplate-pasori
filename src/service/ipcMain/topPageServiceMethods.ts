@@ -1,7 +1,7 @@
-import type { HistoriesMemberIdmRow } from '@/db/histories/historiesRow';
-import type { HistoriesRow } from '@/db/histories/historiesRow';
+import type { HistoriesMemberIdmRow } from '@/db/historiesRow';
+import type { HistoriesRow } from '@/db/historiesRow';
 
-import * as DateUtils from '../../utils/dateUtils';
+import * as DateUtils from '@/utils/dateUtils';
 
 import { dbRun, dbGet, transactionBase } from './utils/serviceUtils';
 

@@ -1,25 +1,17 @@
 import {
   Menu,
   BrowserWindow,
-  MenuItemConstructorOptions,
 } from 'electron';
+import { CardReaderID } from '@/icCard/cardEventID';
 
 import { appVersion } from '../version';
-import { routePath } from '@/renderer/routePath';
+import { routePagePath } from '@/renderer/routePath';
 import { envIs } from './util';
 
-interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
-  selector?: string;
-  submenu?: DarwinMenuItemConstructorOptions[] | Menu;
-}
-
-//const CARD_MANAGE = '#CardManage';
 const GENERAL = '#Genaral';
 const MEMBERS = '#MEMBERS';
 const MEMBERCARDS = '#MEMBERCARDS';
 const DEV_TOOL = "#DEV_TOOL";
-//const APP_VERSION = "#APP_VERSION";
-//const APP_VERSION_VIEW = "#APP_VERSION_VIEW";
 const HISTORIES = "#HISTORIES";
 
 const app_version = appVersion();
@@ -48,15 +40,13 @@ export default class MenuBuilder {
           {
             label: 'HOME',
             click() {
-                sendMessage("navigate", routePath.Home);
-                //toHome();
+                sendMessage("navigate", routePagePath.Home);
             }
           },
           {
             label: 'ゴミ箱',
             click() {
-                sendMessage("navigate", routePath.MemberTrashedListPage);
-//                viewMemberTrashedList();
+                sendMessage("navigate", routePagePath.MemberTrashedListPage);
             }
           }
         ]
@@ -69,7 +59,7 @@ export default class MenuBuilder {
             id: GENERAL,
             enabled: true,
             click() {
-                sendMessage("navigate", routePath.Top);
+                sendMessage("navigate", routePagePath.Top);
             },
           },
           {
@@ -77,7 +67,7 @@ export default class MenuBuilder {
             id: MEMBERS,
             enabled: true,
             click() {
-              sendMessage("navigate", routePath.MemberListPage)
+              sendMessage("navigate", routePagePath.MemberListPage)
             },
           },
           {
@@ -85,7 +75,7 @@ export default class MenuBuilder {
             id: MEMBERCARDS,
             enabled: true,
             click() {
-              sendMessage("navigate", routePath.MemberCardListPage)
+              sendMessage("navigate", routePagePath.MemberCardListPage)
             },
           },
         ],
@@ -98,7 +88,7 @@ export default class MenuBuilder {
             id: HISTORIES,
             enabled: true,
             click: () => {
-                sendMessage("navigate", routePath.HistoriesListPage);
+                sendMessage("navigate", routePagePath.HistoriesListPage);
             }
           },
         ]
@@ -142,7 +132,7 @@ export default class MenuBuilder {
               enabled: true,
               click: () => {
                   const browserWindows = BrowserWindow.getFocusedWindow();
-                  browserWindows?.webContents.send('card-touch', '0000');
+                  browserWindows?.webContents.send(CardReaderID.CARD_TOUCH, '00000000000000000000');
               }
           },
           {
@@ -150,7 +140,7 @@ export default class MenuBuilder {
               enabled: true,
               click: () => {
                   const browserWindows = BrowserWindow.getFocusedWindow();
-                  browserWindows?.webContents.send('card-touch', '123456');
+                  browserWindows?.webContents.send(CardReaderID.CARD_TOUCH, '123456123456123456');
               }
           },
           {
@@ -158,7 +148,7 @@ export default class MenuBuilder {
               enabled: true,
               click: () => {
                   const browserWindows = BrowserWindow.getFocusedWindow();
-                  browserWindows?.webContents.send('card-release', '');
+                  browserWindows?.webContents.send(CardReaderID.CARD_RELEASE, '');
               }
           },
 

@@ -1,8 +1,8 @@
-import { useRef, useMemo, useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import Modal from 'react-modal';
 import { useForm } from 'react-hook-form';
 import { MaterialReactTable, type MRT_Row, type MRT_RowData } from 'material-react-table';
-import { Box, Button, Icon, IconButton, Tooltip } from '@mui/material';
+import { Box, Button, IconButton, Tooltip } from '@mui/material';
 import { styled } from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 
 import { memberListService } from "@/service/ipcRenderer/memberListRenderer";
 import * as PasoriCard from '@/renderer/pages/pasoriCard/pasoriCard';
-import { MemberRow } from "@/db/members/memberRow";
+import { MemberRow } from "@/db/memberRow";
 
 const Display = {
     block: 'block',
