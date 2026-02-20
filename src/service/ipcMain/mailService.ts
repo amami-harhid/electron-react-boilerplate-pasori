@@ -11,7 +11,7 @@ export function ipcMail() {
 
         const mail_subject = (in_out)? Mailer.subject.IN: Mailer.subject.OUT;
         const text = (in_out)? Mailer.text.IN : Mailer.text.OUT;
-        const result = Mailer.sendMail(mail_to, mail_subject, text, name);
+        const result = await Mailer.sendMail(mail_to, mail_subject, text, name);
         event.reply(replyChannel, result);
     });
 }

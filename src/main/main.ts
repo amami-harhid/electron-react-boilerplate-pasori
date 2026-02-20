@@ -25,7 +25,9 @@ const logger = new Logger();
 LoggerRef.logger = logger;
 
 import { db } from "@/db/db";
-import { createTables } from '@/db/createTables';
+import { DatabaseRef } from '@/db/dbReference';
+DatabaseRef.db = db;
+//import { createTables } from '@/db/createTables';
 
 //import { CardReader } from '@/icCard/icCardReader';
 
@@ -107,7 +109,7 @@ const createWindow = async () => {
     });
 
     //---- DB TABLE CREATE IF NOT EXITST
-    await createTables(db);
+    //await createTables(db);
 
     mainWindow.on('closed', () => {
         mainWindow = null;

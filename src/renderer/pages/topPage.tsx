@@ -58,47 +58,55 @@ export function TopPage() {
         await topPageService.setInRoomByFcno(fcno, idm, false);
     }
 
+    const sendMail = async (row:HistoriesMemberIdmRow, in_room:boolean) => {
+        const mailResult = await topPageService.sendMail(row.mail, in_room, row.name);
+        console.log('mail send done')
+        if(mailResult==false){
+            toast.warning('メール送信失敗');
+        }
+    }
+
     /** カードリリース */
     const cardRelease = () => {
+        console.log('cardRelease');
         view.status = '';
         view.modal_display = Display.none;
         setPageView(view);
     }
     /** カードタッチ */
     const cardTouch = async (idm :string) => {
+        console.log(idm)
         if(idm.length==0){
+            console.log('cardTouch none');
             // 安全のために空チェック
             return;
         }
         // idmが登録されている利用者を取得する
         const row = await cardsSelectCardRow(idm);
+        console.log('row=',row);
         if(row) {
             const fcno = row.fcno;
             if( row.in_room == true ) {
                 // 入室中
+                console.log('row=',row);
                 Sounds.play({name:"CARD_OUT"})
-                await setOutRoom( fcno, idm);
+                setOutRoom( fcno, idm);
                 toast.success('退室');
                 if(row.mail != ''){
                     // 退室通知メール
-                    const mailResult = await topPageService.sendMail(row.mail, false, row.name);
-                    if(mailResult==false){
-                      toast.warning('メール送信失敗');
-                    }
+                    sendMail(row, false);
                 }
                 view.status = '退室しました';
                 view.name = `(${row.name}さん)`;
             }else{
                 // 退室中
+                console.log('row=',row);
                 Sounds.play({name:"CARD_IN"});
-                await setInRoom( fcno, idm);
+                setInRoom( fcno, idm);
                 toast.success('入室');
                 if(row.mail != ''){
                     // 入室通知メール                    
-                    const mailResult = await topPageService.sendMail(row.mail, true, row.name);
-                    if(mailResult==false){
-                      toast.warning('メール送信失敗');
-                    }
+                    sendMail(row, true);
                 }
                 view.status = '入室しました';
                 view.name = `(${row.name}さん)`;
@@ -158,6 +166,7 @@ export function TopPage() {
     useEffect(()=>{
         soundInitPlay();
         view.modal_display = Display.none;
+        console.log('In useEffect view.modal_display=',view.modal_display);
         isReaderReady();
     },[providerReaderIsReady]);
 
