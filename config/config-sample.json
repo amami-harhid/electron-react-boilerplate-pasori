@@ -1,0 +1,18 @@
+{
+	"PAGE_TITLE": "入退室チェッカー(Pasori)",
+
+	"DB_PATH": "D:/pasori/database",
+	"DB_NAME": "pasori.db",
+
+	"SMTP_SERVER": "smtp.gmail.com",
+	"SMTP_PORT": 587,
+	"SMPT_SECURE": false,
+	"SMTP_ACCOUNT_USER": "**************",
+	"SMTP_ACCOUNT_PASSWORD":"*************",
+
+	"MAIL_FROM": "\"Pasori_System\" <pasori@xxxxxx.com>",
+	"MAIL_SUBJECT_IN": "入室連絡(〇〇〇〇教室)",
+	"MAIL_SUBJECT_OUT": "退室連絡(〇〇〇〇教室)",
+	"MAIL_TEXT_IN": "入室",
+	"MAIL_TEXT_OUT": "退室"
+}

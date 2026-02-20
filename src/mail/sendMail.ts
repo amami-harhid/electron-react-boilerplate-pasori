@@ -22,7 +22,12 @@ const SMTP_ACCOUNT_PASSWORD = (ApConfig.has("SMTP_ACCOUNT_PASSWORD"))?
         ApConfig.get("SMTP_ACCOUNT_PASSWORD"):"";
 
 // 送信元
-const MAIL_FROM = '"Pasori System" <pasori@mirai-logic.com>'
+const MAIL_FROM_DEFAULT = `"Pasori System" <${SMTP_ACCOUNT_USER}@gmail.com>`
+const MAIL_FROM = (ApConfig.has("MAIL_FROM"))?ApConfig.get("MAIL_FROM"):MAIL_FROM_DEFAULT;
+
+console.log(MAIL_FROM)
+//'"Pasori System" <pasori@mirai-logic.com>'
+
 // 件名
 const MAIL_SUBJECT = {
     IN: (ApConfig.has("MAIL_SUBJECT_IN"))?
