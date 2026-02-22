@@ -4,11 +4,6 @@ const GOOGLE_USER_KEY = 'GOOGLE_USER_KEY';
 const GOOGLE_OAUTH_CLIENT_ID_KEY = 'GOOGLE_OAUTH_CLIENT_ID';
 const GOOGLE_OAUTH_SECRET_KEY = 'GOOGLE_OAUTH_SECRET';
 
-/**
- * 826698549796-ne1ilmdi7r36gdrqmcblt61evi4pi3np.apps.googleusercontent.com
- * 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
- */
-
 const getUser = () => {
     const user = (ApConfig.has(GOOGLE_USER_KEY) )? ApConfig.get(GOOGLE_USER_KEY): '';
     return user;

@@ -6,17 +6,17 @@ const OAuth2 = google.auth.OAuth2;
 import Url from 'url';
 import queryString from 'querystring';
 
-const ACCESS_TOKEN_KEY = 'GOOGLE_OAUTH_ACCESS_TOKEN';
-const REFRESH_TOKEN_KEY = 'GOOGLE_OAUTH_REFRESH_TOKEN'
+const ACCESS_TOKEN_KEY = 'OAUTH_ACCESS_TOKEN';
+const TOKEN_ID_KEY = 'OAUTH_TOKEN_ID'
 export type TAuth = {
     type: string,
     user: string,
     clientId: string,
     clientSecret: string,
-    refreshToken: string,
+    tokenId: string,
 };
  
-type TToken = {access_token:string, refresh_token: string}
+type TToken = {access_token:string, tokenId: string}
 type TTokenAndAuthenticated = {token:TToken, authenticated:boolean}
 
 export class Auth {
@@ -63,12 +63,12 @@ export class Auth {
         })
         .then(()=>{
             console.log('Authentication success');
-            const _auth = {
+            const _auth:TAuth = {
                 type: "OAuth2",
                 user: OAuthInfo.user,
                 clientId: OAuthInfo.clientId,
                 clientSecret: OAuthInfo.clientSecret,
-                refreshToken: ApConfig.get(REFRESH_TOKEN_KEY),            
+                tokenId: ApConfig.get(TOKEN_ID_KEY),            
             }
             if(callback){
                 callback(_auth);
@@ -77,11 +77,11 @@ export class Auth {
     }
     loadTokenFromApplicationStorage():Promise<TTokenAndAuthenticated> {
         return new Promise<TTokenAndAuthenticated>((resolve, reject) => {
-            if(ApConfig.has(ACCESS_TOKEN_KEY) && ApConfig.has(REFRESH_TOKEN_KEY)){
-                if(ApConfig.get(ACCESS_TOKEN_KEY)!='' && ApConfig.get(REFRESH_TOKEN_KEY)!=''){
+            if(ApConfig.has(ACCESS_TOKEN_KEY) && ApConfig.has(TOKEN_ID_KEY)){
+                if(ApConfig.get(ACCESS_TOKEN_KEY)!='' && ApConfig.get(TOKEN_ID_KEY)!=''){
                     const access_token = ApConfig.get(ACCESS_TOKEN_KEY);
-                    const refresh_token = ApConfig.get(REFRESH_TOKEN_KEY);
-                    return resolve({token:{access_token:access_token, refresh_token:refresh_token}, authenticated:false});
+                    const tokenId = ApConfig.get(TOKEN_ID_KEY);
+                    return resolve({token:{access_token:access_token, tokenId:tokenId}, authenticated:false});
                 }
                 reject();
             }else{
@@ -94,7 +94,7 @@ export class Auth {
             this.authenticated = tokenAndAuthenticated.authenticated
             this.oAuth2Client.setCredentials({
                 access_token: tokenAndAuthenticated.token.access_token,
-                refresh_token: tokenAndAuthenticated.token.refresh_token
+                refresh_token: tokenAndAuthenticated.token.tokenId
             });
             resolve()
         });
@@ -115,9 +115,9 @@ export class Auth {
                 console.log('tokens=', tokens);
                 console.log('SET TOKENS')
                 console.log('ACCESS_TOKEN = ', tokens.access_token)
-                console.log('ID_TOKEN = ', tokens.refresh_token);
+                console.log('ID_TOKEN = ', tokens.tokenId);
                 ApConfig.set(ACCESS_TOKEN_KEY, tokens.access_token);
-                ApConfig.set(REFRESH_TOKEN_KEY, tokens.refresh_token);
+                ApConfig.set(TOKEN_ID_KEY, tokens.tokenId);
                 resolve();
             })
             .catch((err)=>{
