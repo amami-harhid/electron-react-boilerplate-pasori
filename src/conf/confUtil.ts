@@ -6,7 +6,9 @@ const save = (obj:{[key:string]:string}) => {
         store.set(key, value)
     }
 }
-
+const set = (key:string, val: string) => {
+    store.set(key, val);
+}
 const get = (key:string) => {
     if(store.has(key)){
         return store.get(key);
@@ -19,5 +21,6 @@ const has = (key:string) => {
 export const ApConfig = {
     get : get,
     save : save,
+    set: set,
     has: has,
 }
