@@ -1,17 +1,12 @@
     import nodemailer from 'nodemailer';
     import { ApConfig } from '@/conf/confUtil';
+    import { OAuthInfo, GOOGLE_OAUTH_REFRESH_TOKEN, GOOGLE_OAUTH_ACCESS_TOKEN } from './oauthInfo';
     import { Logger } from '@/log/logger';
     import { dateDateTime } from '@/utils/dateUtils';
     import { type TAuth, Auth } from './oauth';
+    import type { NodemailerError } from './nodemailerError';
     const logger = new Logger();
 
-    const SMTP_SERVER = (ApConfig.has("SMTP_SERVER"))?
-            ApConfig.get("SMTP_SERVER"):"";
-    const SMTP_PORT = (ApConfig.has("SMTP_PORT"))?
-            ApConfig.get("SMTP_PORT"):456;
-    // trueの場合はSSL/TLSを使用
-    const SMPT_SECURE = (ApConfig.has("SMPT_SECURE"))?
-            ApConfig.get("SMPT_SECURE"):true;
     // user は googleアカウントの@の左側です
     // pass は googleアカウント管理画面内で
     // 二段階認証有効としたうえで、同画面内で
@@ -19,14 +14,8 @@
     // Googleアカウントのパスワードではありません。
     const SMTP_ACCOUNT_USER = (ApConfig.has("SMTP_ACCOUNT_USER"))?
             ApConfig.get("SMTP_ACCOUNT_USER"):"";
-    const SMTP_ACCOUNT_PASSWORD = (ApConfig.has("SMTP_ACCOUNT_PASSWORD"))?
-            ApConfig.get("SMTP_ACCOUNT_PASSWORD"):"";
 
-    // 送信元
-    const MAIL_FROM_DEFAULT = `"Pasori System" <${SMTP_ACCOUNT_USER}@gmail.com>`
-    const MAIL_FROM = (ApConfig.has("MAIL_FROM"))?ApConfig.get("MAIL_FROM"):MAIL_FROM_DEFAULT;
 
-    console.log(MAIL_FROM)
     //'"Pasori System" <pasori@mirai-logic.com>'
 
     // 件名
@@ -45,33 +34,49 @@
     }
 
     const SEND_MAILER = async (mail_to:string, mail_subject:string, text:string, name:string ):Promise<boolean> =>{
-
         const auth = new Auth();
         return new Promise<boolean>((resolve, reject)=>{
-            auth.authenticate(async (auth: TAuth)=>{
-                await _SEND_MAILER(auth, mail_to, mail_subject, text, name);
-                resolve(true);
+            auth.authenticate(async ()=>{
+                const accessToken = await auth.getAccessToken();
+                console.log('accessToken=', accessToken);
+                console.log('OAuthInfo=',OAuthInfo)
+                const _auth:TAuth = {
+                    type: "OAuth2",
+                    user: OAuthInfo.user,
+                    clientId: OAuthInfo.clientId,
+                    clientSecret: OAuthInfo.clientSecret,
+                    refreshToken: ApConfig.get(GOOGLE_OAUTH_REFRESH_TOKEN),
+                    accessToken: null, //ApConfig.get(GOOGLE_OAUTH_ACCESS_TOKEN),
+                }
+                try{
+                    await _SEND_MAILER(auth, _auth, mail_to, mail_subject, text, name);
+                    return resolve(true);
+                }catch(error){
+                    const mailError = error as NodemailerError
+                    if(mailError.code == '530') {
+                        return reject(mailError);
+                    }
+                    throw error;
+                }
 
             })
         });
 
     }
     const _SEND_MAILER =
-        async ( auth: TAuth, mail_to:string, mail_subject:string, text:string, name:string ):Promise<boolean> =>{
-
-        if(SMTP_SERVER == ''){
-            return false;
-        }
-
+        async ( Auth: Auth, auth: TAuth, mail_to:string, mail_subject:string, text:string, name:string ):Promise<boolean> =>{
+        const accessToken = await Auth.getAccessToken();
+        console.log("accessToken=",accessToken)
         const transport = {
             service: "gmail",
-            auth
+            auth: auth,
         }
-
+        console.log('transport=', transport);
         // SMTPサーバーの設定
-        let transporter = nodemailer.createTransport(transport)
+        const transporter = nodemailer.createTransport(transport)
         const now = new Date();
         const currentDateTime = dateDateTime(now)
+        const MAIL_FROM = (ApConfig.has('MAIL_FROM'))?ApConfig.get('MAIL_FROM'):`"Pasori" <${auth.user}>`
         // メール内容の設定
         let mailOptions = {
             from: MAIL_FROM, // 送信元
@@ -96,11 +101,14 @@
         }
 
         try {
+            console.log(mailOptions)
             await transporter.sendMail(mailOptions);
             logger.debug("メールが送信されました:", mailOptions)
         } catch (error) {
-            logger.error("エラーが発生しました:", error)
-            return false;
+            const mailError = error as NodemailerError;
+            console.log('error.code=', mailError.code);
+            logger.error('error.message', mailError.message)
+            throw mailError;
         }
         return true;
     }
