@@ -16,7 +16,7 @@ export type TAuth = {
     accessToken?: string|null,
 };
  
-type TToken = {access_token:string, refreshToken: string}
+type TToken = {access_token:string, refresh_token: string}
 type TTokenAndAuthenticated = {token:TToken, authenticated:boolean}
 
 export class Auth {
@@ -27,26 +27,35 @@ export class Auth {
     private authenticated?: boolean;
     private childBrowser : BrowserWindow|null = null;
     constructor() {
+        console.log('Auth ##0001')
         this.oAuth2Client = new OAuth2(
-            OAuthInfo.clientId,
-            OAuthInfo.clientSecret,
+            OAuthInfo.clientId(),
+            OAuthInfo.clientSecret(),
             "http://localhost"
         );
+        console.log('Auth ##0002')
         this.oAuth2Client.on('tokens', (tokens:TToken)=>{
-            if(tokens.refreshToken){
-                ApConfig.set(GOOGLE_OAUTH_REFRESH_TOKEN, tokens.refreshToken);
+            if(tokens.refresh_token){
+                ApConfig.set(GOOGLE_OAUTH_REFRESH_TOKEN, tokens.refresh_token);
             }
             if(tokens.access_token){
                 ApConfig.set(GOOGLE_OAUTH_ACCESS_TOKEN, tokens.access_token);
             }
             console.log("oAuth2Client.on tokens=", tokens);
         })
+        console.log('Auth ##0003')
         const browsers = BrowserWindow.getAllWindows()
+        console.log('Auth ##0004')
         this.browser = browsers[0];
-        const ScopeGmailSendKey = 'GOOGLE_GMAIL_SCOPE_KEY';
+        console.log('Auth ##0005')
+        const ScopeGmailSendKey = 'GOOGLE_GMAIL_SCOPE';
+        console.log('Auth ##0006')
         const scope = ApConfig.get(ScopeGmailSendKey);
+        console.log('Auth ##0007')
         this.scopes = [scope];
+        console.log('Auth ##0008 ', this.scopes)
         this.authorizationDomains = {allow:[], deny:[]};
+        console.log('Auth ##0009')
     }
     allowAuthorizationDomain(domains:string[] = []) {
         this.authorizationDomains.allow = domains
@@ -55,6 +64,7 @@ export class Auth {
         this.authorizationDomains.deny = domains
     }
     authenticate (callback:()=>Promise<void>) {
+        console.log('start auth.authenticate')
         Promise.resolve()
         .then(():Promise<TTokenAndAuthenticated>=>{
             console.log('start loadTokenFromApplicationStorage');
@@ -76,6 +86,7 @@ export class Auth {
             return this.fetchGoogleService(callback);
         })
         .catch((error:NodemailerError)=>{
+            console.log('error=', error);
             if(this.authenticated == false && error.code && error.code == '530') {
 
             }
@@ -110,7 +121,7 @@ export class Auth {
                 if(ApConfig.get(GOOGLE_OAUTH_ACCESS_TOKEN)!='' && ApConfig.get(GOOGLE_OAUTH_REFRESH_TOKEN)!=''){
                     const access_token = ApConfig.get(GOOGLE_OAUTH_ACCESS_TOKEN);
                     const refreshToken = ApConfig.get(GOOGLE_OAUTH_REFRESH_TOKEN);
-                    return resolve({token:{access_token:access_token, refreshToken:refreshToken}, authenticated:false});
+                    return resolve({token:{access_token:access_token, refresh_token:refreshToken}, authenticated:false});
                 }
                 reject();
             }else{
@@ -119,13 +130,15 @@ export class Auth {
         });
     }
     setAuthenticatedAndCredentials(tokenAndAuthenticated:TTokenAndAuthenticated):Promise<void>{
-        return new Promise<void>((resolve) => {
+        return new Promise<void>(async (resolve) => {
             this.authenticated = tokenAndAuthenticated.authenticated
             this.oAuth2Client.setCredentials({
-                //access_token: tokenAndAuthenticated.token.access_token, // 強制的に期限切れにする
-                refresh_token: tokenAndAuthenticated.token.refreshToken,
+                access_token: tokenAndAuthenticated.token.access_token, // 強制的に期限切れにする
+                refresh_token: tokenAndAuthenticated.token.refresh_token,
                 //expiry_date: 1, // 強制的に期限切れにする
             });
+            const accessToken = await this.oAuth2Client.getAccessToken();
+            console.log("reissued accessToken=", accessToken)
             resolve()
         });
     }
@@ -146,13 +159,13 @@ export class Auth {
                 console.log('SET TOKENS')
                 console.log('ACCESS_TOKEN = ', tokens.access_token);
                 ApConfig.set(GOOGLE_OAUTH_ACCESS_TOKEN, tokens.access_token);
-                if(tokens.refreshToken){
-                    console.log('REFRESH_TOKEN = ', tokens.refreshToken);
-                    ApConfig.set(GOOGLE_OAUTH_REFRESH_TOKEN, tokens.refreshToken);
+                if(tokens.refresh_token){
+                    console.log('REFRESH_TOKEN = ', tokens.refresh_token);
+                    ApConfig.set(GOOGLE_OAUTH_REFRESH_TOKEN, tokens.refresh_token);
                     resolve({ token: tokens, authenticated: true });
                 }else{
                     const refreshToken = ApConfig.get(GOOGLE_OAUTH_REFRESH_TOKEN)
-                    resolve({ token: {refreshToken:refreshToken, access_token: tokens.access_token}, authenticated: true });
+                    resolve({ token: {refresh_token:refreshToken, access_token: tokens.access_token}, authenticated: true });
                 }
             })
             .catch((err)=>{
@@ -176,10 +189,9 @@ export class Auth {
         let count = 0;
         const oAuthBrowser = this.createChildBrowser();
         return new Promise<string>((resolve, reject) => {
-            const url = this.oAuth2Client.generateAuthUrl({ access_type: 'offline', scope: this.scopes})
-             // chrominumからHTTPアクセスをしてGoogle認証確認画面を表示させる
+             // Google認証確認画面を表示させるURlを生成する
+            const url = this.oAuth2Client.generateAuthUrl({ access_type: 'offline', prompt: 'consent', scope: this.scopes})
             console.log(url);
-            const redirectUrl = 'http://localhost'
             const filter = {
                 urls: ['http://localhost*']
             }

@@ -15,7 +15,7 @@ const get = (key) => {
     if(store.has(key)){
         return store.get(key);
     }
-    throw new Error(`NOT FOUND key=(${key})`);
+    return '';
 }
 const has = (key) => {
     return store.has(key);

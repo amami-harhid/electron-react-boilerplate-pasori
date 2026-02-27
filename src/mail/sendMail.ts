@@ -33,40 +33,38 @@
             ApConfig.get("MAIL_TEXT_OUT"):"退室",
     }
 
-    const SEND_MAILER = async (mail_to:string, mail_subject:string, text:string, name:string ):Promise<boolean> =>{
+    const SEND_MAILER = (mail_to:string, mail_subject:string, text:string, name:string ) :boolean =>{
+        console.log('SEND MAILER START')
         const auth = new Auth();
-        return new Promise<boolean>((resolve, reject)=>{
-            auth.authenticate(async ()=>{
-                const accessToken = await auth.getAccessToken();
-                console.log('accessToken=', accessToken);
+        console.log('SEND MAILER new Auth()')
+            console.log('SEND MAILER START Promise start')
+            auth.authenticate(async ():Promise<void>=>{
+                //const accessToken = await auth.getAccessToken();
+                //console.log('accessToken=', accessToken);
                 console.log('OAuthInfo=',OAuthInfo)
                 const _auth:TAuth = {
                     type: "OAuth2",
-                    user: OAuthInfo.user,
-                    clientId: OAuthInfo.clientId,
-                    clientSecret: OAuthInfo.clientSecret,
-                    refreshToken: ApConfig.get(GOOGLE_OAUTH_REFRESH_TOKEN),
-                    accessToken: null, //ApConfig.get(GOOGLE_OAUTH_ACCESS_TOKEN),
+                    user: OAuthInfo.user(),
+                    clientId: OAuthInfo.clientId(),
+                    clientSecret: OAuthInfo.clientSecret(),
+                    refreshToken: OAuthInfo.refreshToken(),
+                    //accessToken: OAuthInfo.accessToken, // アクセストークンは使わない。
                 }
                 try{
                     await _SEND_MAILER(auth, _auth, mail_to, mail_subject, text, name);
-                    return resolve(true);
+                    return
                 }catch(error){
                     const mailError = error as NodemailerError
-                    if(mailError.code == '530') {
-                        return reject(mailError);
-                    }
-                    throw error;
+                    throw mailError;
                 }
 
             })
-        });
-
+        return true;
     }
     const _SEND_MAILER =
         async ( Auth: Auth, auth: TAuth, mail_to:string, mail_subject:string, text:string, name:string ):Promise<boolean> =>{
-        const accessToken = await Auth.getAccessToken();
-        console.log("accessToken=",accessToken)
+        //const accessToken = await Auth.getAccessToken();
+        //console.log("accessToken=",accessToken)
         const transport = {
             service: "gmail",
             auth: auth,
@@ -79,7 +77,7 @@
         const MAIL_FROM = (ApConfig.has('MAIL_FROM'))?ApConfig.get('MAIL_FROM'):`"Pasori" <${auth.user}>`
         // メール内容の設定
         let mailOptions = {
-            from: MAIL_FROM, // 送信元
+            from: auth.user, //MAIL_FROM, // 送信元
             to: mail_to, // 送信先
             subject: mail_subject, // 件名
             text: 

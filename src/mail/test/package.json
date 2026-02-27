@@ -1,0 +1,20 @@
+{
+  "name": "test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "oauth_test.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "cross-env NODE_ENV=config NODE_CONFIG_DIR=C:/Users/user/AppData/Roaming/electron-app-pasori node oauth_test5.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "config": "^4.4.1",
+    "cross-env": "^10.1.0",
+    "express": "^5.2.1",
+    "googleapis": "^171.4.0",
+    "nodemailer": "^8.0.1",
+    "puppeteer": "^24.37.5"
+  }
+}
