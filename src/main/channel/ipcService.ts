@@ -24,6 +24,13 @@ export const IpcMailServiceChannels = {
     CHANNEL_MAIL_REPLY: 'reply-mail-service',
 } as const;
 
+export const IpcOAuth2ServiceChannels = {
+    CHANNEL_OAuth_REQUEST: 'request-oauth-service',
+    CHANNEL_OAuth_REPLY: 'reply-oatuh-service',
+    CHANNEL_PAGE_TRANSITION_REQUEST: 'request-page-transition',
+    CHANNEL_PAGE_TRANSITION_REPLY: 'reply-page-transition',
+} as const;
+
 export const IpcTitleServiceChannels = {
     CHANNEL_TITLE_REQUEST: 'request-title-service',
     CHANNEL_TITLE_REPLY: 'reply-title-service',
@@ -34,5 +41,7 @@ export type IpcChannelValOfService = (typeof IpcChannels)[keyof typeof IpcChanne
 export type IpcServiceChannelValOfService = (typeof IpcServiceChannels)[keyof typeof IpcServiceChannels];
 
 export type IpcMailServiceChannelsValOfService = (typeof IpcMailServiceChannels)[keyof typeof IpcMailServiceChannels];
+
+export type IpcOAuth2ServiceChannelsValOfService = (typeof IpcOAuth2ServiceChannels)[keyof typeof IpcOAuth2ServiceChannels];
 
 export type IpcTitleServiceChannelsValOfServie = (typeof IpcTitleServiceChannels)[keyof typeof IpcTitleServiceChannels];

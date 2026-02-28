@@ -4,6 +4,7 @@ import {
   ElectronProduct,
   ElectronServiceHandler,
   ElectronMailServiceHandler,
+  ElectronOAuth2ServiceHandler,
   ElectronTitleServiceHandler
  } from '@/main/preload';
 
@@ -14,6 +15,7 @@ declare global {
     buildEnv: ElectronProduct;
     electronService: ElectronServiceHandler;
     electronMailService: ElectronMailServiceHandler,
+    electronOAuth2Service: ElectronOAuth2ServiceHandler,
     electronTitleService: ElectronTitleServiceHandler,
   }
 }

@@ -44,7 +44,7 @@ export class Auth {
             console.log("oAuth2Client.on tokens=", tokens);
         })
         console.log('Auth ##0003')
-        const browsers = BrowserWindow.getAllWindows()
+        const browsers = BrowserWindow.getAllWindows();
         console.log('Auth ##0004')
         this.browser = browsers[0];
         console.log('Auth ##0005')

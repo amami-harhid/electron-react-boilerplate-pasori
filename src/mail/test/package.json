@@ -12,6 +12,7 @@
   "dependencies": {
     "config": "^4.4.1",
     "cross-env": "^10.1.0",
+    "ejs": "^4.0.1",
     "express": "^5.2.1",
     "googleapis": "^171.4.0",
     "nodemailer": "^8.0.1",

@@ -3,9 +3,8 @@ import { HashRouter as Router, Routes, Route, useNavigate } from 'react-router-d
 import { ReaderIsReadyContextProvider, useReaderIsReadyContext } from './pages/readerIsReadyProvider';
 import { Masterhead } from './pages/mastheads/mainMasthead';
 import { routePagePath } from './routePath';
-//import { HomePage } from './pages/homePage';
+import { IndexPage } from './pages/indexPage';
 import { TopPage } from './pages/topPage';
-//import { StopPage } from './pages/stopPage';
 import { HistoriesListPage } from './pages/historiesListPage';
 import { MemberListPage } from './pages/memberListPage';
 import { MemberCardListPage } from './pages/memberCardListPage';
@@ -39,7 +38,7 @@ export function App() {
             <Router>
                 <IPCNavigator/>
                 <Routes>
-                        <Route path="/" element={<TopPage />} />
+                        <Route path="/" element={<IndexPage />} />
                         <Route path={path.Top} element={<TopPage />} />
                         <Route path={path.HistoriesListPage} element={<HistoriesListPage />} />
                         <Route path={path.MemberListPage} element={<MemberListPage/>} />

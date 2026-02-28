@@ -5,6 +5,7 @@ export type Channels = IpcServices.IpcChannelValOfService;
 export type ServiceChannels = IpcServices.IpcServiceChannelValOfService;
 export type ServiceMailChannels = IpcServices.IpcMailServiceChannelsValOfService;
 export type ServiceTitleChannels = IpcServices.IpcTitleServiceChannelsValOfServie;
+export type IpcOAuth2ServiceChannelsValOfService = IpcServices.IpcOAuth2ServiceChannelsValOfService;
 
 const electronServiceHandler = {
   ipcServiceRenderer: {
@@ -106,11 +107,35 @@ const electronMailServiceHandler = {
     },
   },
 };
+
+/** 認証サービス */
+const electronOAuthServiceHandler = {
+  ipcOAuthServiceRenderer: {
+    /** 認証 */
+    authorize(channel: IpcOAuth2ServiceChannelsValOfService) {
+      ipcRenderer.send(channel);
+    },
+    /** 認証結果を検知 */
+    asyncOnce(channel: IpcOAuth2ServiceChannelsValOfService):Promise<boolean> {
+      return new Promise<boolean>( (resolve)=>{
+        ipcRenderer.once(channel, (_event, result:boolean) => {
+            resolve(result);
+        })
+      });
+    },
+    pageTransition(channel: IpcOAuth2ServiceChannelsValOfService, page:string) {
+        console.log('====== preload pageTransition ====', channel, page);
+        ipcRenderer.send(channel, page);
+    },
+  },
+};
+
 //contextBridge.exposeInMainWorld('electron', electronHandler);
 contextBridge.exposeInMainWorld('navigate', electronNavigate);
 contextBridge.exposeInMainWorld('pasoriCard', electronPasoriCard);
 contextBridge.exposeInMainWorld('electronService', electronServiceHandler);
 contextBridge.exposeInMainWorld('electronMailService', electronMailServiceHandler);
+contextBridge.exposeInMainWorld('electronOAuth2Service', electronOAuthServiceHandler);
 contextBridge.exposeInMainWorld('electronTitleService', electronTitleServiceHandler);
 
 const buildEnv = {
@@ -143,6 +168,7 @@ export type ElectronNavigate = typeof electronNavigate;
 export type ElectronPasoriCard = typeof electronPasoriCard;
 export type ElectronServiceHandler = typeof electronServiceHandler;
 export type ElectronMailServiceHandler = typeof electronMailServiceHandler;
+export type ElectronOAuth2ServiceHandler = typeof electronOAuthServiceHandler;
 export type ElectronTitleServiceHandler = typeof electronTitleServiceHandler;
 export type ElectronProduct = typeof buildEnv;
 //export type ElectronPasoriDb = typeof electronPasoriDb;

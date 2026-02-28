@@ -1,5 +1,6 @@
 import { ipcMain } from 'electron';
 import * as IpcServices from '@/main/channel/ipcService';
+import { ipcMainAuthorization, pageTransition } from './authService';
 import { ipcMainTopPage } from '../ipcMain/topPageService';
 import { ipcMainMemberListPage } from "./memberListService";
 import { ipcMainMemberCardListPage } from './memberCardListService';
@@ -14,6 +15,8 @@ const replyChannel = IpcServices.IpcServiceChannels.CHANNEL_REPLY;
 
 // RENDERER --> MAIN -->RENDERERのDB通信
 export function ipcMainSqliteBridge() {
+    ipcMainAuthorization();
+    pageTransition();
     ipcMainTopPage();
     ipcMainMemberListPage();
     ipcMainMemberCardListPage();

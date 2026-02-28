@@ -38,7 +38,7 @@ const initView: View = {
 
 
 export function TopPage() {
-
+    console.log('==== TopPage ====')
     const [view, setView] = useState(initView);
     const [providerReaderIsReady,setProviderReaderIsReady] = useContext<ReaderIsReadyState>(ReaderIsReady);
     const setPageView = ( _view: View ) => {
