@@ -4,7 +4,7 @@ import { routePagePath } from '@/renderer/routePath';
 import { toast } from 'sonner';
 import { authRendererService  } from "@/service/ipcRenderer/authRenderer";
 
-const ModalButton = styled(Button)(({ theme })=> ({
+const ControlButton = styled(Button)(({ theme })=> ({
     fontSize: "400%",
     padding: "8px 16px",
     border: "groove 5px  #ffAF50",
@@ -18,12 +18,10 @@ const ModalButton = styled(Button)(({ theme })=> ({
         transform: "scale(1.2)"
     }
 }));
-
-export function IndexPage() {
-
+export function AuthPage() {
+    const [authrized, setAuthorized] = useState<boolean>(false);
     const toTopPage = () => {
-        const path = routePagePath;
-        authRendererService.pageTransition(path.Top);
+        authRendererService.pageTransition(routePagePath.Top);
     }
     const authorize = async () => {
         const authorization = await authRendererService.authorization();
@@ -34,12 +32,13 @@ export function IndexPage() {
             // 戻りが先に戻る。リロードをしたときはauthorization()は常にnullを返す。
         }else if( authorization ) {
             console.log('authorization(1)=', authorization);
+            setAuthorized(true);
             // 認証OK
             toast.info('認証OK');
-            toTopPage();
         }
         else{
             console.log('authorization(2)=', authorization);
+            setAuthorized(false);
             // 認証NG
             toast.error('認証障害中');
         }
@@ -48,9 +47,9 @@ export function IndexPage() {
     return (
         <>
         <div style={{textAlign:'center'}}>
-            <ModalButton onClick={authorize}>
-                &nbsp;&nbsp;認&nbsp;&nbsp;証&nbsp;&nbsp;
-            </ModalButton>
+            <ControlButton onClick={(authrized)? toTopPage: authorize}>
+                {(authrized)?' 開 始 ':' 認 証 '}
+            </ControlButton>
         </div>
         </>
     );

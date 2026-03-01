@@ -38,9 +38,9 @@ export default class MenuBuilder {
         label: 'File',
         submenu: [
           {
-            label: 'HOME',
+            label: '認証',
             click() {
-                sendMessage("navigate", routePagePath.Home);
+                sendMessage("navigate", routePagePath.Auth);
             }
           },
           {

@@ -7,7 +7,7 @@ import { routePagePath } from '@/renderer/routePath';
 /** ページヘッダー部 */
 export const Masterhead = () => {
     const [pageTitle, setPageTitle] = useState("");
-    const [path, setPath] = useState<string>(routePagePath.Home);
+    const [path, setPath] = useState<string>(routePagePath.Auth);
     const [readerIsReady, setReaderIsReady] = useState(false);
     const [_, setProviderReaderIsReady] = useContext<ReaderIsReadyState>(ReaderIsReady);
 
@@ -48,6 +48,11 @@ export const Masterhead = () => {
             setReaderIsError(true);
         })
     }
+    /** 
+     * ページ遷移チェッカー
+     * onNavigateの登録(on)は 1回だけにするよう、注意すること。
+     * ここでは、useEffect()の中から呼び出すようにしておく。
+     */
     const navigateChecker = () => {
         window.navigate.onNavigate((path:string) => {
             console.log('navigate on =', path)

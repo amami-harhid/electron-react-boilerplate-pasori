@@ -3,7 +3,7 @@ import { HashRouter as Router, Routes, Route, useNavigate } from 'react-router-d
 import { ReaderIsReadyContextProvider, useReaderIsReadyContext } from './pages/readerIsReadyProvider';
 import { Masterhead } from './pages/mastheads/mainMasthead';
 import { routePagePath } from './routePath';
-import { IndexPage } from './pages/indexPage';
+import { AuthPage } from './pages/indexPage';
 import { TopPage } from './pages/topPage';
 import { HistoriesListPage } from './pages/historiesListPage';
 import { MemberListPage } from './pages/memberListPage';
@@ -16,6 +16,7 @@ const IPCNavigator = () => {
     useEffect(() => {
         if (window.navigate) {
             window.navigate.onNavigate(async (_path:string) => {
+                console.log('App.tsx onNavigate _path=', _path);
                 await navigate(_path, {replace:false});
             });
         }
@@ -38,7 +39,7 @@ export function App() {
             <Router>
                 <IPCNavigator/>
                 <Routes>
-                        <Route path="/" element={<IndexPage />} />
+                        <Route path={path.Auth} element={<AuthPage />} />
                         <Route path={path.Top} element={<TopPage />} />
                         <Route path={path.HistoriesListPage} element={<HistoriesListPage />} />
                         <Route path={path.MemberListPage} element={<MemberListPage/>} />

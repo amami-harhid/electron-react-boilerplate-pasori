@@ -1,6 +1,6 @@
 /** ページパス */
 export const routePagePath = {
-    Home: '/',
+    Auth: '/',
     Top: '/top',
     HistoriesListPage: '/historieslistpage',
     IdmRegister: '/idmregisterpage',
