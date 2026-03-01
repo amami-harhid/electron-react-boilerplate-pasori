@@ -1,6 +1,6 @@
 {
-  "name": "electron-react-boilerplate",
-  "version": "1.0.0",
+  "name": "electron-app-pasori",
+  "version": "0.4.6",
   "description": "A foundation for scalable desktop apps",
   "keywords": [
     "sqlite3",

@@ -1,22 +1,12 @@
     import nodemailer from 'nodemailer';
     import { ApConfig } from '@/conf/confUtil';
-    import { OAuthInfo, GOOGLE_OAUTH_REFRESH_TOKEN, GOOGLE_OAUTH_ACCESS_TOKEN } from './oauthInfo';
+    import { oAuth2 } from '@/oauth/oauth2';
+    
     import { Logger } from '@/log/logger';
     import { dateDateTime } from '@/utils/dateUtils';
     import { type TAuth, Auth } from './oauth';
     import type { NodemailerError } from './nodemailerError';
     const logger = new Logger();
-
-    // user は googleアカウントの@の左側です
-    // pass は googleアカウント管理画面内で
-    // 二段階認証有効としたうえで、同画面内で
-    // アプリケーションパスワードとして設定したものです。
-    // Googleアカウントのパスワードではありません。
-    const SMTP_ACCOUNT_USER = (ApConfig.has("SMTP_ACCOUNT_USER"))?
-            ApConfig.get("SMTP_ACCOUNT_USER"):"";
-
-
-    //'"Pasori System" <pasori@mirai-logic.com>'
 
     // 件名
     const MAIL_SUBJECT = {
@@ -32,39 +22,16 @@
         OUT: (ApConfig.has("MAIL_TEXT_OUT"))?
             ApConfig.get("MAIL_TEXT_OUT"):"退室",
     }
-
-    const SEND_MAILER = (mail_to:string, mail_subject:string, text:string, name:string ) :boolean =>{
-        console.log('SEND MAILER START')
-        const auth = new Auth();
-        console.log('SEND MAILER new Auth()')
-            console.log('SEND MAILER START Promise start')
-            auth.authenticate(async ():Promise<void>=>{
-                //const accessToken = await auth.getAccessToken();
-                //console.log('accessToken=', accessToken);
-                console.log('OAuthInfo=',OAuthInfo)
-                const _auth:TAuth = {
-                    type: "OAuth2",
-                    user: OAuthInfo.user(),
-                    clientId: OAuthInfo.clientId(),
-                    clientSecret: OAuthInfo.clientSecret(),
-                    refreshToken: OAuthInfo.refreshToken(),
-                    //accessToken: OAuthInfo.accessToken, // アクセストークンは使わない。
-                }
-                try{
-                    await _SEND_MAILER(auth, _auth, mail_to, mail_subject, text, name);
-                    return
-                }catch(error){
-                    const mailError = error as NodemailerError
-                    throw mailError;
-                }
-
-            })
-        return true;
-    }
-    const _SEND_MAILER =
-        async ( Auth: Auth, auth: TAuth, mail_to:string, mail_subject:string, text:string, name:string ):Promise<boolean> =>{
-        //const accessToken = await Auth.getAccessToken();
-        //console.log("accessToken=",accessToken)
+    const SEND_MAILER =
+        async ( mail_to:string, mail_subject:string, text:string, name:string ):Promise<boolean> =>{
+        const auth:TAuth = {
+            type: "OAuth2",
+            user: oAuth2.config.getUser(),
+            clientId: oAuth2.config.getClientId(),
+            clientSecret: oAuth2.config.getClientSecret(),
+            refreshToken: oAuth2.config.getRefreshToken(),
+            accessToken: oAuth2.config.getAccessToken(), 
+        }
         const transport = {
             service: "gmail",
             auth: auth,
@@ -74,10 +41,10 @@
         const transporter = nodemailer.createTransport(transport)
         const now = new Date();
         const currentDateTime = dateDateTime(now)
-        const MAIL_FROM = (ApConfig.has('MAIL_FROM'))?ApConfig.get('MAIL_FROM'):`"Pasori" <${auth.user}>`
         // メール内容の設定
+        const fromAddress = ApConfig.get("MAIL_FROM")+`<${oAuth2.config.getUser()}>`;
         let mailOptions = {
-            from: auth.user, //MAIL_FROM, // 送信元
+            from: fromAddress, // 送信元
             to: mail_to, // 送信先
             subject: mail_subject, // 件名
             text: 

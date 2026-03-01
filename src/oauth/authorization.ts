@@ -1,10 +1,13 @@
 import { google } from 'googleapis';
 import { session, BrowserWindow } from 'electron';
+import { AuthError } from './authError';
 import { oAuth2, type Tokens, type OAuth2Error } from './oauth2';
+import { Logger } from "@/log/logger";
+const logger = new Logger();
 
 const onTokens = (tokens:Tokens) => {
-    console.log('Token再発行')
-    console.log(tokens);
+    logger.debug('Token再発行')
+    logger.debug(tokens);
     if(tokens.access_token){
         oAuth2.config.setAccessToken(tokens.access_token);
     }
@@ -16,7 +19,8 @@ type Token = {access_token: string, refresh_token?: string}
 
 /**
  * Google認証
- * RefreshToken の有効期限切れ、無効化されているときに
+ * RefreshToken の有効期限切れのとき、無効化されているとき、
+ * ローカルにTokenが保存されていないときに
  * Google認証画面を表示して再認証を行う。
  * 
  * 項(1)はアプリを起動した最初の１回、実行することを前提にしている
@@ -26,17 +30,23 @@ export const authorization = () => {
     oAuth2Client.on('tokens', onTokens);
     Promise.resolve()
     .then(()=>{
+        logger.debug('-----tryApi-----')
         const refreshToken = oAuth2.config.getRefreshToken();
         const accessToken = oAuth2.config.getAccessToken();
         return tryApi(oAuth2Client, refreshToken, accessToken);
     })
     .catch((err)=>{
-        // tryApi で認証エラー、有効期限切れエラーが起きたときの対処
-        return requestOAuthCode(oAuth2Client);
+        logger.debug('-----tryApi.catch-----')
+        if(err.code == 401 || err.code == 400){
+            // tryApi で認証エラー、有効期限切れエラーが起きたときの対処
+            return requestOAuthCode(oAuth2Client);
+        }else{
+            throw err;
+        }
     })
     .then((token:Token)=>{
         return new Promise<void>((resolve, reject)=>{
-            console.log('token=', token);
+            logger.debug('token=', token);
             if(token.access_token && token.refresh_token){
                 if(token.access_token){
                     oAuth2.config.setAccessToken(token.access_token);
@@ -51,32 +61,47 @@ export const authorization = () => {
         })        
     })
     .catch((err)=>{
-        console.log('err=', err);
+        logger.debug('err[999]=', err);
         throw err;
     })
     
 }
 const tryApi = (oAuth2Client: any ,refreshToken:string, accessToken:string):Promise<Token> => {
     return new Promise( async(resolve, reject)=>{
-        if( refreshToken == undefined || accessToken == undefined){
-            return reject(new Error('local token not found'));
+        logger.debug('refreshToken=',refreshToken,',accessToken=',accessToken)
+        if( refreshToken == '' || accessToken == ''){
+            const error = new AuthError("local token not found");
+            error.code = 401;
+            return reject(error);
         }
         try{
+            logger.debug('oAuth2Client=', oAuth2Client);
             const oauth2 = google.oauth2({ version: 'v2', auth: oAuth2Client });
-            await oauth2.userinfo.get(); // ユーザー情報を取得してみる
+            const info = await oauth2.userinfo.get(); // ユーザー情報を取得してみる
+            logger.debug('userinfo info=', info)
             const token:Token = {
                 access_token: accessToken,
                 refresh_token: refreshToken,
             }
-            console.log('========== get user info success ==========');
+            logger.debug('========== get user info success ==========');
             resolve(token); // 成功したら認証OK
         }catch(err){
-            const error = err as OAuth2Error;
-            if(error.code == 401 || error.code == 400) {
-                console.log('========== get user info error ==========');
+            logger.debug('userinfo.get.catch=', err)
+            const _error = err as OAuth2Error;
+            _error.code = 999;
+            if(_error.code == 401) {
+                logger.debug('========== get user info error ==========');
                 // 401 : 有効期限切れ
+                const error = new AuthError("Expired");
+                error.code = 401;
+                return reject(error);
+            }else if(_error.code == 400){
                 // 400 : 認証エラー
-                return reject(err);
+                const error = new AuthError("No granted");
+                error.code = 400;
+                return reject(error);
+            }else{
+                return reject(err);                
             }
         }
     })
@@ -87,25 +112,28 @@ const requestOAuthCode = (oAuth2Client: any): Promise<Token> => {
         Promise.resolve()
         .then(()=>{
             return new Promise<string>((resolve,reject)=>{
-             // Google認証確認画面を表示させるURlを生成する
-             const scopes = oAuth2.config.getScopes();
-             const url = oAuth2Client.generateAuthUrl({ access_type: 'offline', prompt: 'consent', scope: scopes})
-             // Google API 認証情報で設定したリダイレクト先が表示されたときのイベント
-            session.defaultSession.webRequest.onBeforeRedirect((details)=>{
-                // 途中で何回かのリダイレクトが起こる都度、リダイレクト先を判定する。
-                const url = details.redirectURL;
-                if(url.startsWith(oAuth2.config.getRedirect())){
-                    // 登録しているリダイレクト先になったとき
-                    const urlObj = new URL(url); 
-                    const code = urlObj.searchParams.get("code");
-                    ChildBrowser.getInstance().clearChildBrowser();
-                    if(code) {
-                        resolve(code)
+                // Google認証確認画面を表示させるURlを生成する
+                const scopes = oAuth2.config.getScopes();
+                logger.debug('scopes=', scopes);
+                const url = oAuth2Client.generateAuthUrl({ access_type: 'offline', prompt: 'consent', scope: scopes})
+                logger.debug('auth url = ', url);
+                // Google API 認証情報で設定したリダイレクト先が表示されたときのイベント
+                session.defaultSession.webRequest.onBeforeRedirect((details)=>{
+                    // 途中で何回かのリダイレクトが起こる都度、リダイレクト先を判定する。
+                    const url = details.redirectURL;
+                    logger.debug('redirect url = ',url,', oAuth2.config.getRedirect()=',oAuth2.config.getRedirect());
+                    if(url.startsWith(oAuth2.config.getRedirect())){
+                        // 登録しているリダイレクト先になったとき
+                        const urlObj = new URL(url); 
+                        const code = urlObj.searchParams.get("code");
+                        ChildBrowser.getInstance().clearChildBrowser();
+                        if(code) {
+                            return resolve(code)
+                        }
+                        return reject(new Error('code を取得できません'));
                     }
-                    reject(new Error('code を取得できません'));
-                }
-            });
-            oAuthBrowser.loadURL(url)
+                });
+                oAuthBrowser.loadURL(url)
 
             });
         })
@@ -114,10 +142,10 @@ const requestOAuthCode = (oAuth2Client: any): Promise<Token> => {
             return fetchTokenFromGoogle(oAuth2Client, code);
         })
         .then((token:Token)=>{
-            resolve(token);
+            return resolve(token);
         })
         .catch((err)=>{
-            reject(err);
+            return reject(err);
         })
     })
 }

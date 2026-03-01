@@ -34,7 +34,6 @@ const sqlPath = ():string => {
         return sqlPath;
     }
 }
-
 export const db = new sqlite3.Database(sqlPath(), (err:Error|null):void =>{
     if(err){
         logger.error(err);

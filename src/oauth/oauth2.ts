@@ -7,7 +7,7 @@ const GOOGLE_OAUTH_SECRET = 'GOOGLE_OAUTH_SECRET';
 const GOOGLE_OAUTH_ACCESS_TOKEN = 'GOOGLE_OAUTH_ACCESS_TOKEN';
 const GOOGLE_OAUTH_REFRESH_TOKEN = 'GOOGLE_OAUTH_REFRESH_TOKEN';
 const GOOGLE_GMAIL_SCOPE = 'GOOGLE_GMAIL_SCOPE';
-const GOOGLE_OAUTH_REDIRECT = 'http://localhost/oauth2callback';
+const GOOGLE_OAUTH_REDIRECT = 'GOOGLE_OAUTH_REDIRECT';
 class OAuth2 {
     private static instance: OAuth2 | null = null;
     private googleClientId: string | null = null;
@@ -22,6 +22,15 @@ class OAuth2 {
     getGoogleSecret() {
         return ApConfig.get(GOOGLE_OAUTH_SECRET);
     }
+    getRedirectUrl() {
+        return ApConfig.get(GOOGLE_OAUTH_REDIRECT);
+    }
+    getAccessToken() {
+        return ApConfig.get(GOOGLE_OAUTH_ACCESS_TOKEN);
+    }
+    getRefreshToken() {
+        return ApConfig.get(GOOGLE_OAUTH_REFRESH_TOKEN);
+    }
     static getInstance(): OAuth2 {
         if(OAuth2.instance == null) {
             OAuth2.instance = new OAuth2();
@@ -31,25 +40,33 @@ class OAuth2 {
 
     constructor() {
     }
-    createOAuth2Client(clientId:string, secret:string): OAuth2Cient {
+    createOAuth2Client(clientId:string, clientSecret:string, redirect:string): OAuth2Cient {
+        console.log('In createOAuth2Client clientId=',clientId,', clientSecret=',clientSecret, ', redirect=', redirect);
         const _oAuth2Client = new google.auth.OAuth2(
             clientId,
-            secret,
-            GOOGLE_OAUTH_REDIRECT
-        )
+            clientSecret,
+            redirect
+        );
+
         return _oAuth2Client;
     }
     getOAuth2Client() : OAuth2Cient {
         const clientId = this.getGoogleClientId();
         const secret = this.getGoogleSecret();
+        const redirect = this.getRedirectUrl();
         if(this.oAuth2Client == null) {
-            this.oAuth2Client = this.createOAuth2Client(clientId, secret);
+            this.oAuth2Client = this.createOAuth2Client(clientId, secret,redirect);
         }
         else if(this.googleClientId != clientId || this.googleSecret != secret) {
-            this.oAuth2Client = this.createOAuth2Client(clientId, secret);
+            this.oAuth2Client = this.createOAuth2Client(clientId, secret, redirect);
         }
         this.googleClientId = clientId;
         this.googleSecret = secret;
+        this.oAuth2Client.setCredentials({
+            access_token: this.getAccessToken(),
+            refresh_token: this.getRefreshToken(),
+        })
+
         return this.oAuth2Client;
     }
 }
@@ -68,17 +85,14 @@ export const oAuth2 = {
 
     client: OAuth2.getInstance().getOAuth2Client(),
     config: {
+        getUser : ():string => {
+            return ApConfig.get(GOOGLE_USER);
+        },
         getClientId : ():string =>{
             return ApConfig.get(GOOGLE_OAUTH_CLIENT_ID)
         },
-        setClientId : (clientId: string) => {
-            ApConfig.set(GOOGLE_OAUTH_CLIENT_ID, clientId);
-        },
-        getSecret : (): string => {
+        getClientSecret : (): string => {
             return ApConfig.get(GOOGLE_OAUTH_SECRET);
-        },
-        setSecret : (secret: string) => {
-            ApConfig.set(GOOGLE_OAUTH_SECRET, secret);
         },
         getAccessToken: () : string => {
             return ApConfig.get(GOOGLE_OAUTH_ACCESS_TOKEN);
