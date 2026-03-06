@@ -10,11 +10,12 @@ export function ipcMainAuthorization(){
     ipcMain.on(channel, async(event:Electron.IpcMainEvent)=>{
         console.log('Authorization main start')
         try{
-            authorization();
+            await authorization();
             console.log('Authorization main success')
             event.reply(replyChannel, true);
         }catch(err){
             console.log('Authorization main error')
+            console.log(err);
             event.reply(replyChannel, false);
         }
     });

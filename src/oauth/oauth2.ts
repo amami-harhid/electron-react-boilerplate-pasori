@@ -1,6 +1,8 @@
 import { google } from "googleapis";
 import { ApConfig } from '@/conf/confUtil';
-
+import { TokensTbl } from "@/db/tokens";
+import { TokensRow } from "@/db/tokensRow";
+import { initTables } from "@/db/initTables";
 const GOOGLE_USER = 'GOOGLE_USER';
 const GOOGLE_OAUTH_CLIENT_ID = 'GOOGLE_OAUTH_CLIENT_ID';
 const GOOGLE_OAUTH_SECRET = 'GOOGLE_OAUTH_SECRET';
@@ -8,39 +10,54 @@ const GOOGLE_OAUTH_ACCESS_TOKEN = 'GOOGLE_OAUTH_ACCESS_TOKEN';
 const GOOGLE_OAUTH_REFRESH_TOKEN = 'GOOGLE_OAUTH_REFRESH_TOKEN';
 const GOOGLE_GMAIL_SCOPE = 'GOOGLE_GMAIL_SCOPE';
 const GOOGLE_OAUTH_REDIRECT = 'GOOGLE_OAUTH_REDIRECT';
+
 class OAuth2 {
     private static instance: OAuth2 | null = null;
-    private googleClientId: string | null = null;
-    private googleSecret: string | null = null;    
-    private oAuth2Client: typeof google.OAuth2Client | null = null;
-    getGoogleUser() {
+    private static googleClientId: string | null = null;
+    private static googleSecret: string | null = null;    
+    private static oAuth2Client: typeof google.OAuth2Client | null = null;
+    static async toTableTokens() {
+        console.log('toTableTokens start ==========');
+        await initTables();
+        //this.toTable(GOOGLE_USER, 0);
+        //this.toTable(GOOGLE_OAUTH_CLIENT_ID, 0);
+        await OAuth2.toTable(GOOGLE_OAUTH_SECRET, 0);
+        //await this.toTable(GOOGLE_OAUTH_REDIRECT, 0);
+        await OAuth2.toTable(GOOGLE_OAUTH_ACCESS_TOKEN, 0);
+        await OAuth2.toTable(GOOGLE_OAUTH_REFRESH_TOKEN, 0);
+    }
+    static async toTable(key: string, expired_in: number) {
+        console.log('toTable key=', key);
+        const val = ApConfig.get(key);
+        if(val != ''){
+            const rslt = await TokensTbl.replaceTable(key, val, expired_in);
+            if(rslt) {
+                ApConfig.set(key, '');
+            }
+        }
+    }
+    static getGoogleUser() {
         return ApConfig.get(GOOGLE_USER);
     }
-    getGoogleClientId() {
-        return ApConfig.get(GOOGLE_OAUTH_CLIENT_ID)
+    static getGoogleClientId() {
+        return ApConfig.get(GOOGLE_OAUTH_CLIENT_ID);
     }
-    getGoogleSecret() {
-        return ApConfig.get(GOOGLE_OAUTH_SECRET);
+    static async getGoogleSecret() {
+        const row = await TokensTbl.selectTable(GOOGLE_OAUTH_SECRET);
+        return row.token;
     }
-    getRedirectUrl() {
+    static getRedirectUrl() {
         return ApConfig.get(GOOGLE_OAUTH_REDIRECT);
     }
-    getAccessToken() {
-        return ApConfig.get(GOOGLE_OAUTH_ACCESS_TOKEN);
+    static async getAccessToken() {
+        const row = await TokensTbl.selectTable(GOOGLE_OAUTH_ACCESS_TOKEN);
+        return row.token;
     }
-    getRefreshToken() {
-        return ApConfig.get(GOOGLE_OAUTH_REFRESH_TOKEN);
+    static async getRefreshToken() {
+        const row = await TokensTbl.selectTable(GOOGLE_OAUTH_REFRESH_TOKEN);
+        return row.token;
     }
-    static getInstance(): OAuth2 {
-        if(OAuth2.instance == null) {
-            OAuth2.instance = new OAuth2();
-        }
-        return OAuth2.instance;
-    }
-
-    constructor() {
-    }
-    createOAuth2Client(clientId:string, clientSecret:string, redirect:string): OAuth2Cient {
+    static createOAuth2Client(clientId:string, clientSecret:string, redirect:string): OAuth2Cient {
         console.log('In createOAuth2Client clientId=',clientId,', clientSecret=',clientSecret, ', redirect=', redirect);
         const _oAuth2Client = new google.auth.OAuth2(
             clientId,
@@ -50,24 +67,27 @@ class OAuth2 {
 
         return _oAuth2Client;
     }
-    getOAuth2Client() : OAuth2Cient {
-        const clientId = this.getGoogleClientId();
-        const secret = this.getGoogleSecret();
-        const redirect = this.getRedirectUrl();
-        if(this.oAuth2Client == null) {
-            this.oAuth2Client = this.createOAuth2Client(clientId, secret,redirect);
+    static async getOAuth2Client() : Promise<OAuth2Cient> {
+        console.log('getOAuth2Client start ==========');
+        await OAuth2.toTableTokens();
+        console.log('toTableTokens done ==========');
+        const clientId = OAuth2.getGoogleClientId();
+        const secret = await OAuth2.getGoogleSecret();
+        const redirect = await OAuth2.getRedirectUrl();
+        if(OAuth2.oAuth2Client == null) {
+            OAuth2.oAuth2Client = OAuth2.createOAuth2Client(clientId, secret,redirect);
         }
-        else if(this.googleClientId != clientId || this.googleSecret != secret) {
-            this.oAuth2Client = this.createOAuth2Client(clientId, secret, redirect);
+        else if(OAuth2.googleClientId != clientId || OAuth2.googleSecret != secret) {
+            OAuth2.oAuth2Client = OAuth2.createOAuth2Client(clientId, secret, redirect);
         }
-        this.googleClientId = clientId;
-        this.googleSecret = secret;
-        this.oAuth2Client.setCredentials({
-            access_token: this.getAccessToken(),
-            refresh_token: this.getRefreshToken(),
+        OAuth2.googleClientId = clientId;
+        OAuth2.googleSecret = secret;
+        OAuth2.oAuth2Client.setCredentials({
+            access_token: await OAuth2.getAccessToken(),
+            refresh_token: await OAuth2.getRefreshToken(),
         })
-
-        return this.oAuth2Client;
+        console.log('getOAuth2Client done ==========');
+        return OAuth2.oAuth2Client;
     }
 }
 
@@ -83,7 +103,7 @@ export type OAuth2Cient = typeof google.OAuth2Client;
 export type OAuth2Error = {code: number};
 export const oAuth2 = {
 
-    client: OAuth2.getInstance().getOAuth2Client(),
+    client: OAuth2.getOAuth2Client,
     config: {
         getUser : ():string => {
             return ApConfig.get(GOOGLE_USER);
@@ -91,20 +111,22 @@ export const oAuth2 = {
         getClientId : ():string =>{
             return ApConfig.get(GOOGLE_OAUTH_CLIENT_ID)
         },
-        getClientSecret : (): string => {
-            return ApConfig.get(GOOGLE_OAUTH_SECRET);
+        getClientSecret : async (): Promise<string> => {
+            return await OAuth2.getGoogleSecret();
         },
-        getAccessToken: () : string => {
-            return ApConfig.get(GOOGLE_OAUTH_ACCESS_TOKEN);
+        getAccessToken: async () : Promise<string> => {
+            return await OAuth2.getAccessToken();
         },
-        setAccessToken: (accessToken: string) => {
-            ApConfig.set(GOOGLE_OAUTH_ACCESS_TOKEN, accessToken);
+        setAccessToken: async (accessToken: string, expired_in: number=-1): Promise<boolean> => {
+            const rslt = await TokensTbl.replaceTable(GOOGLE_OAUTH_ACCESS_TOKEN, accessToken, expired_in);
+            return rslt;
         },
-        getRefreshToken: (): string => {
-            return ApConfig.get(GOOGLE_OAUTH_REFRESH_TOKEN);
+        getRefreshToken: async (): Promise<string> => {
+            return await OAuth2.getRefreshToken();
         },
-        setRefreshToken: (refreshToken: string) => {
-            ApConfig.set(GOOGLE_OAUTH_REFRESH_TOKEN, refreshToken);
+        setRefreshToken: async (refreshToken: string, expired_in: number=-1): Promise<boolean> => {
+            const rslt = await TokensTbl.replaceTable(GOOGLE_OAUTH_REFRESH_TOKEN, refreshToken, expired_in);
+            return rslt;
         },
         getScopes: () => {
             return ApConfig.get(GOOGLE_GMAIL_SCOPE).split(',');

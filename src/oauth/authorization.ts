@@ -9,10 +9,25 @@ const onTokens = (tokens:Tokens) => {
     logger.debug('Token再発行')
     logger.debug(tokens);
     if(tokens.access_token){
-        oAuth2.config.setAccessToken(tokens.access_token);
+        const utc_time_expiry_date = (tokens.expiry_date)? tokens.expiry_date: -1;
+        if(utc_time_expiry_date>0){
+            // 日本標準時間のミリ秒に変更してログ表示
+            logger.debug('utc_time_expiry_date =', new Date(utc_time_expiry_date + 9*60*60*1000));
+        }
+        logger.debug('tokens.access_token=', tokens.access_token);
+        oAuth2.config.setAccessToken(tokens.access_token, utc_time_expiry_date);
     }
+    const remaining_seconds = (tokens.refresh_token_expires_in)? tokens.refresh_token_expires_in: -1; 
     if(tokens.refresh_token){
-        oAuth2.config.setRefreshToken(tokens.refresh_token);
+        oAuth2.config.setRefreshToken(tokens.refresh_token, remaining_seconds);
+        logger.debug('tokens.refresh_token=', tokens.refresh_token);
+        if(remaining_seconds>0){
+            logger.debug('refresh_token_expires_in=', remaining_seconds);
+        }
+    }
+    if(remaining_seconds>0){
+        oAuth2.config.setRefreshToken('', remaining_seconds);
+    
     }
 }
 type Token = {access_token: string, refresh_token?: string}
@@ -25,14 +40,16 @@ type Token = {access_token: string, refresh_token?: string}
  * 
  * 項(1)はアプリを起動した最初の１回、実行することを前提にしている
  */
-export const authorization = () => {
-    const oAuth2Client = oAuth2.client;
+export const authorization = async () => {
+    console.log('authorization start=======');
+    const oAuth2Client = await oAuth2.client();
+    console.log('authorization oAuth2.client() done =======');
     oAuth2Client.on('tokens', onTokens);
     Promise.resolve()
-    .then(()=>{
+    .then(async ()=>{
         logger.debug('-----tryApi-----')
-        const refreshToken = oAuth2.config.getRefreshToken();
-        const accessToken = oAuth2.config.getAccessToken();
+        const refreshToken = await oAuth2.config.getRefreshToken();
+        const accessToken = await oAuth2.config.getAccessToken();
         return tryApi(oAuth2Client, refreshToken, accessToken);
     })
     .catch((err)=>{

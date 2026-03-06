@@ -28,9 +28,9 @@
             type: "OAuth2",
             user: oAuth2.config.getUser(),
             clientId: oAuth2.config.getClientId(),
-            clientSecret: oAuth2.config.getClientSecret(),
-            refreshToken: oAuth2.config.getRefreshToken(),
-            accessToken: oAuth2.config.getAccessToken(), 
+            clientSecret: await oAuth2.config.getClientSecret(),
+            refreshToken: await oAuth2.config.getRefreshToken(),
+            accessToken: await oAuth2.config.getAccessToken(), 
         }
         const transport = {
             service: "gmail",

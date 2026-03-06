@@ -24,6 +24,7 @@ console.log('envIs.debug = ', envIs.debug)
 Logger._debug_mode = envIs.debug; // デバッグモード(true)のときだけ logger.debug() を処理する
 const logger = new Logger();
 LoggerRef.logger = logger;
+import { initTables } from '@/db/initTables';
 
 import { db } from "@/db/db";
 import { DatabaseRef } from '@/db/dbReference';
@@ -64,6 +65,9 @@ const createWindow = async () => {
     if (isDebug) {
         await installExtensions();
     }
+    // テーブル定義がないときはCreate-Table をする
+    console.log('initTable--------')
+    await initTables();
 
     const RESOURCES_PATH = app.isPackaged
       ? path.join(process.resourcesPath, 'assets')
@@ -118,6 +122,7 @@ const createWindow = async () => {
         shell.openExternal(edata.url);
         return { action: 'deny' };
     });
+
 };
 
 /**
