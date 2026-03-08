@@ -72,7 +72,7 @@ const deleteMemberByFcno = async(fcno: string):Promise<boolean>=>{
                 `UPDATE members SET soft_delete = TRUE, date_time = datetime('now', 'localtime')
                  WHERE fcno = ? AND soft_delete = FALSE`;
         const changes = await dbRun(update, [fcno]);
-        console.log('delete cards changes=',changes);
+        //console.log('delete cards changes=',changes);
         if(changes>0)
             return true;
         else

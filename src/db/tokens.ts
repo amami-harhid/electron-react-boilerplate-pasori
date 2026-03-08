@@ -1,9 +1,12 @@
 import { exec } from "./dbCommon";
 import type { TokensRow } from "./tokensRow";
+import { Logger } from "@/log/logger";
+const logger = new Logger();
+
 export const TokensTbl = {
     createTable: 
         async function(cb:CallableFunction = ()=>{}):Promise<number>{
-            console.log('tokens createTable------')
+            logger.debug('tokens createTable------');
             const query = `
                 CREATE TABLE IF NOT EXISTS tokens (
                     [id] integer primary key autoincrement,
@@ -11,7 +14,7 @@ export const TokensTbl = {
                     [token] text,
                     [expired_in] number
                 )`;
-            console.log('tokens createTable query=', query);
+            logger.debug(`tokens createTable query=${query}`);
             return exec.run(query, cb);
         },
     dropTable:
@@ -22,14 +25,14 @@ export const TokensTbl = {
     
     selectTable: 
         async function(key: string): Promise<TokensRow> {
-            console.log('tokens selectTable------')
+            logger.debug(`tokens selectTable------`);
             const query = `SELECT * FROM tokens WHERE key = ?`;
             const row = await exec.get<TokensRow>(query, [key]);
             return row;
         },
     replaceTable:
         async function(key: string, token: string, expired_in:number = -1): Promise<boolean> {
-            console.log('tokens replaceTable------')
+            logger.debug(`tokens replaceTable------`);
             const row = await this.selectTable(key);
             if(row) {
                 if( expired_in == -1) {
@@ -38,6 +41,7 @@ export const TokensTbl = {
                     token = ?
                     WHERE key = ?
                     `;
+                    logger.debug(`tokens replaceTable query=`,query);
                     const rslt = await exec.run(query,()=>{},[token, key]);
                     if( rslt > 0 )
                         return true;
@@ -51,6 +55,7 @@ export const TokensTbl = {
                             expired_in = ?
                         WHERE key = ?
                         `;
+                        logger.debug(`tokens replaceTable query=`,query);
                         const rslt = await exec.run(query,()=>{},[expired_in, key]);
                         if( rslt > 0 )
                             return true;
@@ -63,6 +68,7 @@ export const TokensTbl = {
                             token = ?, expired_in = ?
                             WHERE key = ?
                             `;
+                        logger.debug(`tokens replaceTable query=`,query);
                         const rslt = await exec.run(query,()=>{},[token, expired_in, key]);
                         if( rslt > 0 )
                             return true;
@@ -75,6 +81,7 @@ export const TokensTbl = {
                 `INSERT INTO tokens 
                 (key, token, expired_in) VALUES ( ?, ?, ? )
                 `;
+                logger.debug(`tokens replaceTable query=`,query);
                 const rslt = await exec.run(query,()=>{},[key, token, expired_in]);
                 if( rslt > 0 )
                     return true;

@@ -1,6 +1,6 @@
 {
   "name": "electron-app-pasori",
-  "version": "0.4.6",
+  "version": "0.5.1",
   "description": "A foundation for scalable desktop apps",
   "keywords": [
     "sqlite3",

@@ -8,14 +8,14 @@ export function ipcMainAuthorization(){
     const channel = IpcServices.IpcOAuth2ServiceChannels.CHANNEL_OAuth_REQUEST;
     const replyChannel = IpcServices.IpcOAuth2ServiceChannels.CHANNEL_OAuth_REPLY;
     ipcMain.on(channel, async(event:Electron.IpcMainEvent)=>{
-        console.log('Authorization main start')
+        //console.log('Authorization main start')
         try{
             await authorization();
-            console.log('Authorization main success')
+            //console.log('Authorization main success')
             event.reply(replyChannel, true);
         }catch(err){
-            console.log('Authorization main error')
-            console.log(err);
+            //console.log('Authorization main error')
+            //console.log(err);
             event.reply(replyChannel, false);
         }
     });
@@ -24,16 +24,16 @@ export function ipcMainAuthorization(){
 export function pageTransition() {
     const channel = IpcServices.IpcOAuth2ServiceChannels.CHANNEL_PAGE_TRANSITION_REQUEST;
     ipcMain.on(channel, async(event:Electron.IpcMainEvent, page:string)=>{
-        console.log('====== main navigate ========', page);
+        //console.log('====== main navigate ========', page);
         sendMessage("navigate", page);
     })
 }
 const sendMessage = (messageId: string, ...args:string[]): void => {
     const browserWindows = BrowserWindow.getAllWindows();
-    console.log('browserWindows.length=', browserWindows.length)
+    //console.log('browserWindows.length=', browserWindows.length)
     if( browserWindows.length>0 ) {
         const browserWindow = browserWindows[0];
-        console.log('messageId=', messageId, ', args=', args);
+        //console.log('messageId=', messageId, ', args=', args);
         browserWindow.webContents.send(messageId, ...args);
     }
 }

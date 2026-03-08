@@ -16,24 +16,24 @@ export const authRendererService = {
     authorization: async function(): Promise<boolean | null> {
         Kick.counter += 1;
         const _counter = Kick.counter;
-        console.log('counter(0)=', _counter);
+        //console.log('counter(0)=', _counter);
         if(Kick.kick == false){
-            console.log('authorization send');
+            //console.log('authorization send');
             Kick.kick = true;
             ipcRenderer.authorize(CHANNEL_REQUEST);
             const val = await ipcRenderer.asyncOnce(CHANNEL_REPLY);
             Kick.kick = false;
-            console.log('counter(1)=', _counter);
-            console.log('authorization recieve');
+            //console.log('counter(1)=', _counter);
+            //console.log('authorization recieve');
             return val;        
         }
         await wait(0.5);
-        console.log('counter(2)=', _counter);
+        //console.log('counter(2)=', _counter);
         return null;
     },
     /** ページ遷移 */
     pageTransition: async (page: string) => {
-        console.log('====== pageTransition (Renderer)=======', page);
+        //console.log('====== pageTransition (Renderer)=======', page);
         ipcRenderer.pageTransition(CHANNEL_PAGE_REQUEST, page);
     }
 };

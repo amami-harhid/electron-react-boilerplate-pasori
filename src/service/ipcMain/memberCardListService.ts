@@ -26,7 +26,7 @@ export function ipcMainMemberCardListPage() {
             const fcno:string = args[0];
             const idm:string = args[1];
             const result: boolean = await methods.setIdmByFcno(fcno, idm);
-            console.log('memberCardListService setIdmByFcno result=', result);
+            //console.log('memberCardListService setIdmByFcno result=', result);
             event.reply(replyChannel, result);
             return;
         }

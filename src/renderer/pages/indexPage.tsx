@@ -31,13 +31,13 @@ export function AuthPage() {
             // authorization()の処理は少し時間がかかるので、1回目の戻りよりは2回目の
             // 戻りが先に戻る。リロードをしたときはauthorization()は常にnullを返す。
         }else if( authorization ) {
-            console.log('authorization(1)=', authorization);
+            //console.log('authorization(1)=', authorization);
             setAuthorized(true);
             // 認証OK
             toast.info('認証OK');
         }
         else{
-            console.log('authorization(2)=', authorization);
+            //console.log('authorization(2)=', authorization);
             setAuthorized(false);
             // 認証NG
             toast.error('認証障害中');

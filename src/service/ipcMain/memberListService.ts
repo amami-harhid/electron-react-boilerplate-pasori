@@ -15,13 +15,13 @@ const replyChannel = IpcServices.IpcServiceChannels.MEMBERLIST_CHANNEL_REPLY;
 
 export function ipcMainMemberListPage() {
     ipcMain.on(channel, async(event:Electron.IpcMainEvent, command:string, ...args:any[])=>{
-        console.log('ipcMain.on memberListPage')
+        //console.log('ipcMain.on memberListPage')
         // IDMが紐づいたメンバーを取得する
         if( command == methods.getMemberByFcno.name ){
             const fcno:string = args[0];
-            console.log('membersList command=',command)
+            //console.log('membersList command=',command)
             const row: MemberRow = await methods.getMemberByFcno(fcno);
-            console.log('memberList row=',row);
+            //console.log('memberList row=',row);
             event.reply(replyChannel, row);
             return;            
         }

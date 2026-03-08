@@ -7,6 +7,8 @@ export const initTables = async() => {
     await Members.createTable();
     await Idms.createTable();
     await Histories.createTable();
+    console.log('---- TokensTbl.createTable()')
     await TokensTbl.createTable();
+    console.log('---- TokensTbl.createTable() done')
 
 }

@@ -220,7 +220,7 @@ export function MemberListPage () {
     };
     const formSubmitRegist = async (data:FormValues) => {
         // DBレコードを追加する
-        console.log('formSubmitRegist')
+        //console.log('formSubmitRegist')
         const fcno = data.fcno;
         const row = await memberListService.getMemberIdmByFcno(fcno);
         if(row == undefined) {
@@ -239,7 +239,7 @@ export function MemberListPage () {
 
     }
     const formSubmitReplace = async (data:FormValues) => {
-        console.log('formSubmitReplace')
+        //console.log('formSubmitReplace')
         // DBレコード上書きをする
         const fcno = data.fcno;
         const row = await memberListService.getMemberByFcno(fcno);
@@ -256,7 +256,7 @@ export function MemberListPage () {
 
     }
     const formSubmitDelete = async (data:FormValues) => {
-        console.log('formSubmitDelete')
+        //console.log('formSubmitDelete')
         const fcno = data.fcno;
         const row = await memberListService.getMemberByFcno(fcno);
         if(row) {

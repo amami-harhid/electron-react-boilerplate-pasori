@@ -3,6 +3,7 @@ import { BrowserWindow } from 'electron';
 import { NFC, Reader } from "./nfc-pcsc/index";
 import { Logger } from "@/log/logger";
 import { CardReaderID, type TCardReaderChannel } from './cardEventID';
+const logger = new Logger();
 
 interface ICCard {
     uid: string; // とりあえず uid を使えるようにする
@@ -10,7 +11,6 @@ interface ICCard {
 
 
 
-const logger = new Logger()
 type TReader = typeof Reader;
 
 
@@ -26,11 +26,11 @@ export class SCardReader {
     static instance : CardReader;
     static getCardReader(force:boolean = false) {
         if(force){
-            console.log('===== [1] create instance CardReader')
+            logger.debug('===== [1] create instance CardReader');
             SCardReader.instance = new CardReader();
         }
         if(SCardReader.instance == null){
-            console.log('===== [2] create instance CardReader')
+            logger.debug('===== [2] create instance CardReader')
             SCardReader.instance = new CardReader();
         }
         return SCardReader.instance;
@@ -42,7 +42,6 @@ export class CardReader {
     private nfc: typeof NFC;
     private pre_uid:string = '';
     constructor() {
-        console.log('CardReader instructor =============')
         //const nfc = new NFC();
         /* @ts-ignore */
         this.nfc = new NFC(logger);
@@ -53,11 +52,9 @@ export class CardReader {
             info: logger.info,
             warn: logger.warn,
             debug: (...args: any) => {
-                //console.log(...args);
                 logger.debug(...args);
             },
             error: (...args: any) => {
-                //console.log(...args);
                 logger.error(...args);
             },
         };
@@ -78,7 +75,6 @@ export class CardReader {
         try {
             this.ready_main();
         } catch (e) {
-            //console.log('ready error chatch!=========')
             const browser = getMainBrowser();
             browser.webContents.send(CardReaderID.CARD_READER_ERROR);
             logger.error(e);
@@ -117,7 +113,6 @@ export class CardReader {
             const msg = `CARD TOUCH uid=(${uid})`;
             this._logger.debug(msg);
         }
-        //console.log('before nfc.on ready');
         /* @ts-ignore */
         this.nfc.on('reader', (reader: TReader) => {
             const browser = getMainBrowser();
@@ -138,8 +133,7 @@ export class CardReader {
             });
             /* @ts-ignore */
             reader.on('error', (err) => {
-                //console.log('In icCardReader');
-                console.log(err);
+                logger.error(err);
                 const browser = getMainBrowser();
                 browser.webContents.send(CardReaderID.CARD_READER_ERROR);
             })

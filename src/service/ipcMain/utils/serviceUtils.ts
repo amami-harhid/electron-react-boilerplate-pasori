@@ -15,7 +15,7 @@ export const dbRun = async (query:string, params:any[]=[]): Promise<number>=>{
                 logger.error(err);
                 stmt.finalize();
                 reject(err);
-                console.log("==== after reject ", err)
+                //console.log("==== after reject ", err)
                 return;
             }
             const runResult = this as sqlite.RunResult;

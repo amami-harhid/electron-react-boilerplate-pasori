@@ -163,7 +163,7 @@ export function MemberTrashedListPage () {
                 name: (row.name)?row.name:'',
                 kana: (row.kana)?row.kana:'',
             }
-            console.log(newRow)
+            //console.log(newRow)
             _data.push(newRow);
         }
         pageInfo.tableData = _data;

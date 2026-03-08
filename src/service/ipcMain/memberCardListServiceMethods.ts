@@ -18,17 +18,17 @@ const setIdmByFcno = async(fcno:string, idm:string):Promise<boolean>=>{
         `SELECT * FROM idms
          WHERE fcno = ?`; // 論理削除されているかは考慮しない
     const row = await dbGet<IdmRow>(query,[fcno]);
-    console.log('In setIdmByFcno, query=',query);
-    console.log('In setIdmByFcno, row=',row);
+    //console.log('In setIdmByFcno, query=',query);
+    //console.log('In setIdmByFcno, row=',row);
     if(row) {
         if(row.fcno == fcno){
             // idmが登録されているメンバーと一致(論理削除を含む)
             const query =
               `UPDATE idms SET idm = ?, soft_delete = FALSE, date_time = datetime('now', 'localtime')
                WHERE fcno = ?`;
-            console.log('In setIdmByFcno[1], query=',query);
+            //console.log('In setIdmByFcno[1], query=',query);
             const changes = await dbRun(query, [idm, fcno]);
-            console.log('In setIdmByFcno[1], changes=',changes);
+            //console.log('In setIdmByFcno[1], changes=',changes);
             if(changes>0){
                 return true;
             }
@@ -42,21 +42,19 @@ const setIdmByFcno = async(fcno:string, idm:string):Promise<boolean>=>{
             `INSERT INTO idms (fcno, idm, soft_delete, date_time)
              VALUES( ?, ?, FALSE, datetime('now', 'localtime') )`;
         try{
-        console.log('In setIdmByFcno[2], query=',query);
+        //console.log('In setIdmByFcno[2], query=',query);
         const changes = await dbRun(query, [fcno, idm]);
-        console.log('In setIdmByFcno[2], changes=',changes);
+        //console.log('In setIdmByFcno[2], changes=',changes);
         if(changes>0){
             return true;
         }
 
         }catch(e){
-            console.log('=========e=',e);
+            //console.log('=========e=',e);
             const _e = e as Error
             // @ts-ignore
-            console.log('_e.code = ', _e.code);
-            // @ts-ignore
             if(_e.code == 'SQLITE_CONSTRAINT') {
-                console.log('SQLITE_CONSTRAINT catched')
+                //console.log('SQLITE_CONSTRAINT catched')
                 return true;
             }
         }

@@ -36,7 +36,7 @@
             service: "gmail",
             auth: auth,
         }
-        console.log('transport=', transport);
+        logger.debug('transport=', transport);
         // SMTPサーバーの設定
         const transporter = nodemailer.createTransport(transport)
         const now = new Date();
@@ -66,12 +66,12 @@
         }
 
         try {
-            console.log(mailOptions)
+            logger.debug(mailOptions)
             await transporter.sendMail(mailOptions);
             logger.debug("メールが送信されました:", mailOptions)
         } catch (error) {
             const mailError = error as NodemailerError;
-            console.log('error.code=', mailError.code);
+            logger.error('error.code=', mailError.code);
             logger.error('error.message', mailError.message)
             throw mailError;
         }

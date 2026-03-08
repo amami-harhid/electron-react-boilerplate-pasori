@@ -1,5 +1,7 @@
 import { google } from "googleapis";
 import { ApConfig } from '@/conf/confUtil';
+import { Logger } from "@/log/logger";
+const logger = new Logger();
 import { TokensTbl } from "@/db/tokens";
 import { TokensRow } from "@/db/tokensRow";
 import { initTables } from "@/db/initTables";
@@ -17,7 +19,7 @@ class OAuth2 {
     private static googleSecret: string | null = null;    
     private static oAuth2Client: typeof google.OAuth2Client | null = null;
     static async toTableTokens() {
-        console.log('toTableTokens start ==========');
+        logger.debug('toTableTokens start ==========');
         await initTables();
         //this.toTable(GOOGLE_USER, 0);
         //this.toTable(GOOGLE_OAUTH_CLIENT_ID, 0);
@@ -27,7 +29,7 @@ class OAuth2 {
         await OAuth2.toTable(GOOGLE_OAUTH_REFRESH_TOKEN, 0);
     }
     static async toTable(key: string, expired_in: number) {
-        console.log('toTable key=', key);
+        logger.debug('toTable key=', key);
         const val = ApConfig.get(key);
         if(val != ''){
             const rslt = await TokensTbl.replaceTable(key, val, expired_in);
@@ -57,8 +59,12 @@ class OAuth2 {
         const row = await TokensTbl.selectTable(GOOGLE_OAUTH_REFRESH_TOKEN);
         return row.token;
     }
+    static async getRefreshTokenExpiry() {
+        const row = await TokensTbl.selectTable(GOOGLE_OAUTH_REFRESH_TOKEN);
+        return row.expired_in;
+    }
     static createOAuth2Client(clientId:string, clientSecret:string, redirect:string): OAuth2Cient {
-        console.log('In createOAuth2Client clientId=',clientId,', clientSecret=',clientSecret, ', redirect=', redirect);
+        logger.debug('In createOAuth2Client clientId=',clientId,', clientSecret=',clientSecret, ', redirect=', redirect);
         const _oAuth2Client = new google.auth.OAuth2(
             clientId,
             clientSecret,
@@ -68,14 +74,14 @@ class OAuth2 {
         return _oAuth2Client;
     }
     static async getOAuth2Client() : Promise<OAuth2Cient> {
-        console.log('getOAuth2Client start ==========');
+        logger.debug('getOAuth2Client start ==========');
         await OAuth2.toTableTokens();
-        console.log('toTableTokens done ==========');
+        logger.debug('toTableTokens done ==========');
         const clientId = OAuth2.getGoogleClientId();
         const secret = await OAuth2.getGoogleSecret();
         const redirect = await OAuth2.getRedirectUrl();
         if(OAuth2.oAuth2Client == null) {
-            OAuth2.oAuth2Client = OAuth2.createOAuth2Client(clientId, secret,redirect);
+            OAuth2.oAuth2Client = OAuth2.createOAuth2Client(clientId, secret, redirect);
         }
         else if(OAuth2.googleClientId != clientId || OAuth2.googleSecret != secret) {
             OAuth2.oAuth2Client = OAuth2.createOAuth2Client(clientId, secret, redirect);
@@ -86,7 +92,7 @@ class OAuth2 {
             access_token: await OAuth2.getAccessToken(),
             refresh_token: await OAuth2.getRefreshToken(),
         })
-        console.log('getOAuth2Client done ==========');
+        logger.debug('getOAuth2Client done ==========');
         return OAuth2.oAuth2Client;
     }
 }
@@ -123,6 +129,9 @@ export const oAuth2 = {
         },
         getRefreshToken: async (): Promise<string> => {
             return await OAuth2.getRefreshToken();
+        },
+        getRefreshTokenExpiry: async (): Promise<number> => {
+            return await OAuth2.getRefreshTokenExpiry();
         },
         setRefreshToken: async (refreshToken: string, expired_in: number=-1): Promise<boolean> => {
             const rslt = await TokensTbl.replaceTable(GOOGLE_OAUTH_REFRESH_TOKEN, refreshToken, expired_in);

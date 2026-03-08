@@ -15,18 +15,18 @@ export const Masterhead = () => {
     /** Main側でConfigよりタイトルを取り出してRender側で受け取る */
     const loadTitle = async (): Promise<void> => {
         const title = await titleService.getTitle();
-        console.log("title=", title);
+        //console.log("title=", title);
         setPageTitle(title);
     }
     const readerStart = async () => {
         if (readerIsReady) {
             return;
         }
-        console.log('readerStart!!!');
+        //console.log('readerStart!!!');
         window.pasoriCard.startReader();
     }
     const readerForceStart = async () => {
-        console.log('readerForceStart!!!');
+        //console.log('readerForceStart!!!');
         window.pasoriCard.startReader(true);
     }
     const readerOnReady = () => {
@@ -55,7 +55,7 @@ export const Masterhead = () => {
      */
     const navigateChecker = () => {
         window.navigate.onNavigate((path:string) => {
-            console.log('navigate on =', path)
+            //console.log('navigate on =', path)
             setPath(path);
         });
     }

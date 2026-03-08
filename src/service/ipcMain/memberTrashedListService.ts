@@ -14,12 +14,12 @@ const replyChannel = IpcServices.IpcServiceChannels.MEMBERTRUSHED_CHANNEL_REPLY;
 
 export function ipcMainMemberTrashedListPage() {
     ipcMain.on(channel, async(event:Electron.IpcMainEvent, command:string, ...args:any[])=>{
-        console.log('ipcMain.on memberTrashedListPage')
+        //console.log('ipcMain.on memberTrashedListPage')
         // 論理削除されたメンバーを取得する
         if( command == methods.getTrashedMembers.name ){
-            console.log('----getTrashedMembers----')
+            //console.log('----getTrashedMembers----')
             const rows: MemberRow[] = await methods.getTrashedMembers();
-            console.log(rows);
+            //console.log(rows);
             event.reply(replyChannel, rows);
             return;
         }
