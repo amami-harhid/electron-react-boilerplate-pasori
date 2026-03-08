@@ -39,11 +39,11 @@ type Token = {access_token: string, refresh_token?: string}
  * 
  * 項(1)はアプリを起動した最初の１回、実行することを前提にしている
  */
-export const authorization = async () => {
+export const authorization = async () :Promise<boolean>=> {
     logger.debug('authorization start=======');
     const oAuth2Client = await oAuth2.client();
     oAuth2Client.on('tokens', onTokens);
-    Promise.resolve()
+    return Promise.resolve()
     .then(async ()=>{
         logger.debug('-----test refreshtoken expiry-----')
         return new Promise(async(resolve,reject)=>{
@@ -75,6 +75,13 @@ export const authorization = async () => {
     })
     .then((token:Token)=>{
         logger.debug('token=', token);
+        return true;
+    })
+    .catch((err)=>{
+        // requestOAuthCodeで エラーが起きたとき
+        // 認証時に アクセス許可を求める画面で『拒否』をしたときエラーにしている
+        logger.error(err);
+        return false;
     });
 /*
     .then((token:Token)=>{
@@ -163,13 +170,20 @@ const requestOAuthCode = (oAuth2Client: any): Promise<Token> => {
                     if(url.startsWith(oAuth2.config.getRedirect())){
                         // 登録しているリダイレクト先になったとき
                         const urlObj = new URL(url); 
-                        const code = urlObj.searchParams.get("code");
+                        const code = urlObj.searchParams.get('code');
                         ChildBrowser.getInstance().clearChildBrowser();
                         if(code) {
                             return resolve(code)
                         }
+                        const error = urlObj.searchParams.get('error');
+                        if(error && error=='access_denied'){
+                            return reject(new Error('アクセスが拒否されました'));
+                        }
                         return reject(new Error('code を取得できません'));
                     }
+                });
+                oAuthBrowser.on('closed', () => {
+                    return reject(new Error('認証が中断されました'));
                 });
                 oAuthBrowser.loadURL(url)
 

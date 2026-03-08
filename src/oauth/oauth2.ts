@@ -14,10 +14,10 @@ const GOOGLE_GMAIL_SCOPE = 'GOOGLE_GMAIL_SCOPE';
 const GOOGLE_OAUTH_REDIRECT = 'GOOGLE_OAUTH_REDIRECT';
 
 class OAuth2 {
-    private static instance: OAuth2 | null = null;
     private static googleClientId: string | null = null;
     private static googleSecret: string | null = null;    
     private static oAuth2Client: typeof google.OAuth2Client | null = null;
+    private static oAuth2RedirectUri: string | null = null;
     static async toTableTokens() {
         logger.debug('toTableTokens start ==========');
         await initTables();
@@ -83,7 +83,7 @@ class OAuth2 {
         if(OAuth2.oAuth2Client == null) {
             OAuth2.oAuth2Client = OAuth2.createOAuth2Client(clientId, secret, redirect);
         }
-        else if(OAuth2.googleClientId != clientId || OAuth2.googleSecret != secret) {
+        else if(OAuth2.googleClientId != clientId || OAuth2.googleSecret != secret || OAuth2.oAuth2RedirectUri != redirect) {
             OAuth2.oAuth2Client = OAuth2.createOAuth2Client(clientId, secret, redirect);
         }
         OAuth2.googleClientId = clientId;

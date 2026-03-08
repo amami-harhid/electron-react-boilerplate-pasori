@@ -1,7 +1,7 @@
 {
   "name": "electron-app-pasori",
   "description": "Simple IC-Card application",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "keywords": [
     "electron",
     "boilerplate",
@@ -93,6 +93,7 @@
     "electron-log": "^5.3.2",
     "electron-store": "^11.0.2",
     "electron-updater": "^6.3.9",
+    "googleapis": "^171.4.0",
     "material-react-table": "^3.2.1",
     "nodemailer": "^8.0.1",
     "react": "^19.2.4",
@@ -195,7 +196,7 @@
           "x64"
         ]
       },
-      "icon":"icons_pasori/icons/mac/icon.icns",
+      "icon": "icons_pasori/icons/mac/icon.icns",
       "type": "distribution",
       "hardenedRuntime": true,
       "entitlements": "assets/entitlements.mac.plist",
@@ -217,13 +218,13 @@
       ]
     },
     "win": {
-      "icon":"icons_pasori/icons/win/icon.ico",
+      "icon": "icons_pasori/icons/win/icon.ico",
       "target": [
         "nsis"
       ]
     },
     "linux": {
-      "icon":"icons_pasori/icons/png/128x128.png",
+      "icon": "icons_pasori/icons/png/128x128.png",
       "target": [
         "AppImage"
       ],

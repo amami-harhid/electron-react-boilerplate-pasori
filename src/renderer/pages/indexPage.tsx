@@ -34,13 +34,13 @@ export function AuthPage() {
             //console.log('authorization(1)=', authorization);
             setAuthorized(true);
             // 認証OK
-            toast.info('認証OK');
+            toast.info('認証成功');
         }
         else{
             //console.log('authorization(2)=', authorization);
             setAuthorized(false);
             // 認証NG
-            toast.error('認証障害中');
+            toast.error('認証失敗');
         }
     }
 
