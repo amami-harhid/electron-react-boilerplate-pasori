@@ -46,16 +46,19 @@ export const authorization = async () :Promise<boolean>=> {
     return Promise.resolve()
     .then(async ()=>{
         logger.debug('-----test refreshtoken expiry-----')
-        return new Promise(async(resolve,reject)=>{
+        return new Promise<void>(async(resolve,reject)=>{
             const refreshTokenExpiry = await oAuth2.config.getRefreshTokenExpiry();
-            const limit = Date.now() + 24*60*60*1000; // 24時間後
+            const limit = Date.now() - 24*60*60*1000; // 24時間前
             if(refreshTokenExpiry < limit) {
                 // およそ1日以内に期限切れの場合
                 const error = new AuthError("Expired");
                 error.code = 401;
+                logger.debug('-----test refreshtoken expiry error 401')
+
                 return reject(error);
             }
-            return resolve;
+            logger.debug('-----test refreshtoken expiry Done')
+            return resolve();
         })
     })
     .then(async ()=>{
@@ -109,18 +112,18 @@ export const authorization = async () :Promise<boolean>=> {
 }
 const tryApi = (oAuth2Client: any ,refreshToken:string, accessToken:string):Promise<Token> => {
     return new Promise( async(resolve, reject)=>{
-        //logger.debug('refreshToken=',refreshToken,',accessToken=',accessToken)
+        logger.debug('refreshToken=',refreshToken,',accessToken=',accessToken)
         if( refreshToken == '' || accessToken == ''){
             const error = new AuthError("local token not found");
             error.code = 401;
             return reject(error);
         }
         try{
-            //logger.debug('oAuth2Client=', oAuth2Client);
+            logger.debug('oAuth2Client=', oAuth2Client);
             const oauth2 = google.oauth2({ version: 'v2', auth: oAuth2Client });
             const info = await oauth2.userinfo.get(); // ユーザー情報を取得してみる
             logger.debug('userinfo info=', info)
-            //logger.debug('========== get user info success ==========');
+            logger.debug('========== get user info success ==========');
             //logger.debug('oAuth2Client[2]=', oAuth2Client);
             // accessTokenが有効期限切れの場合、API実行中に再発行され、DBに反映される
             // refreshTokenが有効期限切れの場合、エラー401が発生する

@@ -25,7 +25,7 @@ export const TokensTbl = {
     
     selectTable: 
         async function(key: string): Promise<TokensRow> {
-            logger.debug(`tokens selectTable------`);
+            logger.debug(`tokens selectTable------ key=`, key);
             const query = `SELECT * FROM tokens WHERE key = ?`;
             const row = await exec.get<TokensRow>(query, [key]);
             return row;
