@@ -36,10 +36,31 @@ const initView: View = {
   errorMessage02: '',
 } as const;
 
+const character = document.querySelector('#c_character');
+const BG_1 = 'container_bg_1';
+const BG_2 = 'container_bg_2';
+const BG_3 = 'container_bg_3';
+const BG_4 = 'container_bg_4';
+const nextBg = () => {
+    if(character?.classList.contains(BG_1)){
+        character?.classList.remove(BG_1);
+        character?.classList.add(BG_2);
+    }else if(character?.classList.contains(BG_2)){
+        character?.classList.remove(BG_2);
+        character?.classList.add(BG_3);
+    }else if(character?.classList.contains(BG_3)){
+        character?.classList.remove(BG_3);
+        character?.classList.add(BG_4);
+    }else if(character?.classList.contains(BG_4)){
+        character?.classList.remove(BG_4);
+        character?.classList.add(BG_1);
+    }
+}
 
 export function TopPage() {
     //console.log('==== TopPage ====')
     const [view, setView] = useState(initView);
+    const [bgNo, setBgNo] = useState<number>(1);
     const [providerReaderIsReady,setProviderReaderIsReady] = useContext<ReaderIsReadyState>(ReaderIsReady);
     const setPageView = ( _view: View ) => {
         const _clone = structuredClone(_view);
@@ -84,6 +105,7 @@ export function TopPage() {
         const row = await cardsSelectCardRow(idm);
         //console.log('row=',row);
         if(row) {
+            nextBg();
             const fcno = row.fcno;
             if( row.in_room == true ) {
                 // 入室中

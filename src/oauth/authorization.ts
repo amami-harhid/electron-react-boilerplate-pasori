@@ -24,10 +24,6 @@ const onTokens = (tokens:Tokens) => {
         oAuth2.config.setRefreshToken(tokens.refresh_token, remaining_seconds);
         logger.debug('tokens.refresh_token=', tokens.refresh_token);
     }
-//    if(remaining_seconds>0){
-//        oAuth2.config.setRefreshToken('', remaining_seconds);
-//    
-//    }
 }
 type Token = {access_token: string, refresh_token?: string}
 
@@ -86,28 +82,6 @@ export const authorization = async () :Promise<boolean>=> {
         logger.error(err);
         return false;
     });
-/*
-    .then((token:Token)=>{
-        return new Promise<void>((resolve, reject)=>{
-            logger.debug('token=', token);
-            if(token.access_token && token.refresh_token){
-                if(token.access_token){
-                    oAuth2.config.setAccessToken(token.access_token);
-                }
-                if(token.refresh_token){
-                    oAuth2.config.setRefreshToken(token.refresh_token);
-                }
-            }else{
-                reject(new Error('token に access_token, refresh_token のどちらもない'));
-            }
-            resolve();
-        })        
-    })
-    .catch((err)=>{
-        logger.error('err[999]=', err);
-        throw err;
-    })
-*/
     
 }
 const tryApi = (oAuth2Client: any ,refreshToken:string, accessToken:string):Promise<Token> => {
