@@ -72,16 +72,17 @@ export const Masterhead = () => {
     }, []);
 
     return (
-    <>
-        <Button variant="contained" color="primary" onClick={readerForceStart}
-            style={(readerIsError) ? { display: "inline-block", zIndex:100 } : { display: "none" }}
-            >障害中</Button>
-        <Button variant="contained" color="primary" disabled={true}
-            style={(readerIsError) ? { display: "none" } : { display: "inline-block", color:"#ffffff" }}
-        >{(readerIsReady) ? "接続" : "切断"}</Button>
-        <h1 className="pageTitle">
-            <span>{(path==routePagePath.Top)? pageTitle: ''}</span>
-        </h1>
+    <><div className="mainHeader">
+            <Button variant="contained" color="primary" onClick={readerForceStart}
+                style={(readerIsError) ? { display: "inline-block", zIndex:100, height:20 } : { display: "none" }}
+                >障害中</Button>
+            <Button variant="contained" color="primary" disabled={true}
+                style={(readerIsError) ? { display: "none" } : { display: "inline-block", color:"#ffffff", height:50 }}
+            >{(readerIsReady) ? "接続" : "切断"}</Button>
+            <h1 className="pageTitle">
+                <span>{(path==routePagePath.Top)? pageTitle: ''}</span>
+            </h1>
+    </div>
     </>
     );
 }

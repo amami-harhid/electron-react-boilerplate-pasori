@@ -28,7 +28,7 @@
 }
 .container_bg_2 {
     background-image: url('../../../assets/amami_habu.png');
-    background-size: 80% 120%;
+    background-size: 80% 100%;
     filter:drop-shadow(-65px -35px 65px #ffffff);
     background-repeat: no-repeat;
     background-position: center;
@@ -36,14 +36,14 @@
 .container_bg_3 {
     background-image: url('../../../assets/amami_ishikawagaeru.png');
     filter:drop-shadow(-65px -35px 65px #ffffff);
-    background-size: 100% 150%;
+    background-size: 120% 200%;
     background-repeat: no-repeat;
     background-position: center;
 }
 .container_bg_4 {
     background-image: url('../../../assets/amami_nokurousagi.png');
     filter:drop-shadow(-65px -35px 65px #ffffff);
-    background-size: 100% 150%;
+    background-size: 100% 120%;
     background-repeat: no-repeat;
     background-position: center;
 }
@@ -68,9 +68,10 @@ h1 {
     text-align: center;
 }
 .pageTitle {
-    font-size: 300%;
+    font-size: 350%;
     font-weight: bolder;
     color: gold;
+    margin: 0;
 }
 .modal {
     opacity: 1.0;
@@ -212,4 +213,10 @@ h1 {
 
 .customRedIcon {
   color: red; /* あるいは、任意の色コード */
+}
+
+.mainHeader {
+    height: 5%;
+    display: flex;
+    justify-content: space-between; /* 要素間のスペースを均等配置 */
 }
