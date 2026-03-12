@@ -1,18 +1,17 @@
 {
 	"PAGE_TITLE": "入退室チェッカー(Pasori)",
-
 	"DB_PATH": "D:/pasori/database",
 	"DB_NAME": "pasori.db",
-
-	"SMTP_SERVER": "smtp.gmail.com",
-	"SMTP_PORT": 587,
-	"SMPT_SECURE": false,
-	"SMTP_ACCOUNT_USER": "**************",
-	"SMTP_ACCOUNT_PASSWORD":"*************",
-
-	"MAIL_FROM": "\"Pasori_System\" <pasori@xxxxxx.com>",
-	"MAIL_SUBJECT_IN": "入室連絡(〇〇〇〇教室)",
-	"MAIL_SUBJECT_OUT": "退室連絡(〇〇〇〇教室)",
+	"MAIL_FROM": "\"*****_Pasori_System\"",
+	"MAIL_SUBJECT_IN": "入室連絡(iTeen奄美ティダモール校)",
+	"MAIL_SUBJECT_OUT": "退室連絡(iTeen奄美ティダモール校)",
 	"MAIL_TEXT_IN": "入室",
-	"MAIL_TEXT_OUT": "退室"
+	"MAIL_TEXT_OUT": "退室",
+	"GOOGLE_GMAIL_SCOPE": "https://mail.google.com/,https://www.googleapis.com/auth/userinfo.profile",
+	"GOOGLE_USER": "********@gmail.com",
+	"GOOGLE_OAUTH_CLIENT_ID": "*******-*******.apps.googleusercontent.com",
+	"GOOGLE_OAUTH_REDIRECT": "http://localhost/oauth2callback",
+	"GOOGLE_OAUTH_SECRET": "",
+	"GOOGLE_OAUTH_REFRESH_TOKEN": "",
+	"GOOGLE_OAUTH_ACCESS_TOKEN": ""
 }

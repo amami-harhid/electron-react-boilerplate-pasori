@@ -125,6 +125,7 @@ export class CardReader {
             reader.on('card', cardTouch);
             /* @ts-ignore */
             reader.on('card.off', cardRelease);
+            const _this = this;
             /* @ts-ignore */
             reader.on('end', () => {
                 browser.webContents.send(CardReaderID.CARD_READER_END);
@@ -133,6 +134,7 @@ export class CardReader {
             });
             /* @ts-ignore */
             reader.on('error', (err) => {
+                _this._ready = false;
                 logger.error(err);
                 const browser = getMainBrowser();
                 browser.webContents.send(CardReaderID.CARD_READER_ERROR);
@@ -141,6 +143,7 @@ export class CardReader {
         const _this = this;
         /* @ts-ignore */
         this.nfc.on('error', (error: Error) => {
+            _this._ready = false;
             const browser = getMainBrowser();
             browser.webContents.send(CardReaderID.CARD_READER_ERROR);
             _this.close();
