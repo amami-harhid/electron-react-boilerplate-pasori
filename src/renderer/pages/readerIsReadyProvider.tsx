@@ -6,13 +6,13 @@ export const ReaderIsReady = createContext<ReaderIsReadyState>([false, ()=>{}]);
 
 export const ReaderIsReadyContextProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
 
-    const [readerIsReady, setReaderIsReady] = useState(false);
+	const [readerIsReady, setReaderIsReady] = useState(false);
 
-    return (
-      <ReaderIsReady.Provider value={[readerIsReady, setReaderIsReady]}>
-        {children}
-      </ReaderIsReady.Provider>
-    );
+	return (
+		<ReaderIsReady.Provider value={[readerIsReady, setReaderIsReady]}>
+			{children}
+		</ReaderIsReady.Provider>
+	);
 
 }
 export const useReaderIsReadyContext = () => useContext(ReaderIsReady);

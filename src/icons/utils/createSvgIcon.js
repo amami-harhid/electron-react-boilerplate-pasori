@@ -2,12 +2,12 @@
 'use client';
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+	value: true
 });
 Object.defineProperty(exports, "default", {
-  enumerable: true,
-  get: function () {
-    return _utils.createSvgIcon;
-  }
+	enumerable: true,
+	get: function () {
+		return _utils.createSvgIcon;
+	}
 });
 var _utils = require("@mui/material/utils");

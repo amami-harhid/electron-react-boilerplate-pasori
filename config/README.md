@@ -11,16 +11,19 @@
 | PAGE_TITLE | 表示するタイトル | 全角半角可 | 項目なし OR 空文字のとき(⇒ A )   |
 | DB_PATH | DB保存場所 | 実在するフォルダ( / 区切り) | 項目なし、空文字のとき(後述) |
 | DB_NAME | DB名称 | 例 pasori.db | 項目なし、空文字のとき(後述) |
-| SMTP_SERVER | メール送信SMTPサーバー | 半角 | gmailの場合、smtp.gmail.com |
-| SMTP_PORT | メール送信ポート番号 | 半角数字 | gmailの場合、587 |
-| SMPT_SECURE | secure指定 | true or false | gmailの場合、 false |
-| SMTP_ACCOUNT_USER | SMTPアカウント |  | gmailの場合、 メールアドレスの@の左側 |
-| SMTP_ACCOUNT_PASSWORD | SMTPパスワード |  | gmailの場合、 ２段階認証アプリパスワード |
-| MAIL_FROM | 送信元アドレス | "〇〇〇" <xxx@zzz.com> | 項目なし、空文字のとき(後述) |
+| DB_NAME | DB名称 | 例 pasori.db | 項目なし、空文字のとき(後述) |
+| MAIL_FROM | 送信元名称 | "\"〇〇〇\"" | 項目なし、空文字のとき(後述) |
 | MAIL_SUBJECT_IN | 入室メールの表題 |  | 項目なし、空文字のとき(後述) |
 | MAIL_SUBJECT_OUT | 退出メールの表題 |  | 項目なし、空文字のとき(後述) |
 | MAIL_TEXT_IN | 入室 |  | 項目なし、空文字のとき(後述) |
 | MAIL_TEXT_OUT | 退室 |  | 項目なし、空文字のとき(後述) |
+| GOOGLE_GMAIL_SCOPE |  |  | Google OAuthクライアント設定どおり、カンマ区切り |
+| GOOGLE_USER | ***@gmail.com |  | Googleアカウント |
+| GOOGLE_OAUTH_CLIENT_ID | ***-***.apps.googleusercontent.com |  | Google OAuthクライアントID |
+| GOOGLE_OAUTH_REDIRECT |  |  | Google OAuthクライアント設定どおり |
+| GOOGLE_OAUTH_SECRET |  |  | 初回のみ |
+| GOOGLE_OAUTH_REFRESH_TOKEN |  |  | 初回のみ |
+| GOOGLE_OAUTH_ACCESS_TOKEN |  |  | 初回のみ |
 
 ## PAGE_TITLE
 `PAGE_TITLE`がない、または値が空文字の場合、タイトルは『入退室チェッカー』になります。

@@ -15,14 +15,14 @@ const CHANNEL_REPLY = IpcServices.IpcServiceChannels.HISTORIES_CHANNEL_REPLY;
 
 export function ipcMainHistoriesListPagePage() {
 
-    ipcMain.on(CHANNEL_REQUEST, async(event:Electron.IpcMainEvent, command:string, ...args:any[])=>{
-        // IDMが紐づいたメンバーを取得する
-        if( command == methods.getHistoriesByDate.name ){
-            const date:Date = args[0];
-            const rows: HistoriesMemberRow[] = await methods.getHistoriesByDate(date);
-            event.reply(CHANNEL_REPLY, rows);
-            return;            
-        }
-        logger.error(`comman is not match =(${command})`)
-    });
+	ipcMain.on(CHANNEL_REQUEST, async(event:Electron.IpcMainEvent, command:string, ...args:any[])=>{
+		// IDMが紐づいたメンバーを取得する
+		if( command == methods.getHistoriesByDate.name ){
+			const date:Date = args[0];
+			const rows: HistoriesMemberRow[] = await methods.getHistoriesByDate(date);
+			event.reply(CHANNEL_REPLY, rows);
+			return;			
+		}
+		logger.error(`comman is not match =(${command})`)
+	});
 }

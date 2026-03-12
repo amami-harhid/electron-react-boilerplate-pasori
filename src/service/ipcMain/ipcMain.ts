@@ -15,16 +15,16 @@ const replyChannel = IpcServices.IpcServiceChannels.CHANNEL_REPLY;
 
 // RENDERER --> MAIN -->RENDERERのDB通信
 export function ipcMainSqliteBridge() {
-    ipcMainAuthorization();
-    pageTransition();
-    ipcMainTopPage();
-    ipcMainMemberListPage();
-    ipcMainMemberCardListPage();
-    ipcMainHistoriesListPagePage();
-    ipcMainMemberTrashedListPage();
-    ipcMainTitle();
-    ipcCardReader();
-    ipcMail();
+	ipcMainAuthorization();
+	pageTransition();
+	ipcMainTopPage();
+	ipcMainMemberListPage();
+	ipcMainMemberCardListPage();
+	ipcMainHistoriesListPagePage();
+	ipcMainMemberTrashedListPage();
+	ipcMainTitle();
+	ipcCardReader();
+	ipcMail();
 };
 
 

@@ -4,7 +4,7 @@
     
     import { Logger } from '@/log/logger';
     import { dateDateTime } from '@/utils/dateUtils';
-    import { type TAuth, Auth } from './oauth';
+    import type { TAuth } from './oauth';
     import type { NodemailerError } from './nodemailerError';
     const logger = new Logger();
 

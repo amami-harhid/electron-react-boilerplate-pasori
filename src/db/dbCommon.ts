@@ -1,4 +1,4 @@
-// Main/Render どちらも import できるはず。
+// Main側でのみインポートする
 import sqlite from 'sqlite3';
 import { Logger } from '../log/logger';
 import { DatabaseRef } from './dbReference';
