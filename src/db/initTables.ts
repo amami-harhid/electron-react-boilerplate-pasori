@@ -10,5 +10,6 @@ export const initTables = async() => {
     await Idms.createTable();
     await Histories.createTable();
     await TokensTbl.createTable();
+    await Histories.autoLeaveRoom();
     logger.debug('---- initTables done ')
 }

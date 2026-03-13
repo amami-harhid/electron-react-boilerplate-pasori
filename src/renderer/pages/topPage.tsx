@@ -198,7 +198,7 @@ export function TopPage() {
 		<>
 		{/* モーダル */}
 		<div className="modal" style={{display: view.modal_display}}>
-			<div className="modal-content">
+			<div className="modal-content card_room">
 				<div className="card" style={{display: view.card_display}}>
 					<p>{view.status}</p>
 					<p>{view.name}</p>
