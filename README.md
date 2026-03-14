@@ -5,12 +5,9 @@ IC-Card entry and exit system ( electron-react-boilerplate )
 
 - Windows 10 / 11
 - Node (20.11.1)
+- Electron (35.0.2)
 - Visual Studio 2019 Build Tools
 - SONY Ferica RC-S380
-
-# Electron
-
-Electron (35.0.2)
 
 # 事前準備
 

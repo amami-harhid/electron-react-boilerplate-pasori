@@ -7,9 +7,11 @@ export const Histories = {
                 CREATE TABLE IF NOT EXISTS histories (
                     [id] integer primary key autoincrement,
                     [fcno] text,
-                    [date] date,
+                    [date] text,
+                    [date_in] text,
+                    [date_out] text,
                     [in_room] boolean,
-                    [date_time] datetime
+                    [date_time] text
                 )`;
             return exec.run(query, cb);
         },
@@ -23,9 +25,9 @@ export const Histories = {
     autoLeaveRoom:
         async function(cb:CallableFunction=()=>{}):Promise<number>{
             const query = 
-            `UPDATE histories SET in_room = FALSE
+            `UPDATE histories SET in_room = FALSE, date_out = ?
              WHERE in_room = TRUE AND date < date('now', 'localtime')
             `;
-            return exec.run(query, cb);
+            return exec.run(query, cb, ['23:59:59']);
         }
 } as const;

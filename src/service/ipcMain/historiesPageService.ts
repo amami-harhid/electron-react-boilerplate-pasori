@@ -23,6 +23,20 @@ export function ipcMainHistoriesListPagePage() {
 			event.reply(CHANNEL_REPLY, rows);
 			return;			
 		}
+		else if( command == methods.changeToInRoom.name) {
+			const fcno:string = args[0];
+			const date:Date = args[1];
+			const rslt = await methods.changeToInRoom(fcno, date);
+			event.reply(CHANNEL_REPLY, rslt);
+			return;
+		}
+		else if( command == methods.changeToClearInRoom.name) {
+			const fcno:string = args[0];
+			const date:Date = args[1];
+			const rslt = await methods.changeToClearInRoom(fcno, date);
+			event.reply(CHANNEL_REPLY, rslt);
+			return;		
+		}
 		logger.error(`comman is not match =(${command})`)
 	});
 }

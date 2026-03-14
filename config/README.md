@@ -11,7 +11,6 @@
 | PAGE_TITLE | 表示するタイトル | 全角半角可 | 項目なし OR 空文字のとき(⇒ A )   |
 | DB_PATH | DB保存場所 | 実在するフォルダ( / 区切り) | 項目なし、空文字のとき(後述) |
 | DB_NAME | DB名称 | 例 pasori.db | 項目なし、空文字のとき(後述) |
-| DB_NAME | DB名称 | 例 pasori.db | 項目なし、空文字のとき(後述) |
 | MAIL_FROM | 送信元名称 | "\"〇〇〇\"" | 項目なし、空文字のとき(後述) |
 | MAIL_SUBJECT_IN | 入室メールの表題 |  | 項目なし、空文字のとき(後述) |
 | MAIL_SUBJECT_OUT | 退出メールの表題 |  | 項目なし、空文字のとき(後述) |
@@ -41,10 +40,6 @@
 ## MAIL_FROM
 `MAIL_FROM`がない、または値が空文字のときは、送信元は、
 『"Pasori System" <[SMTP_ACCOUNT_USER]@gmail.com>』になります。
-
-ただし、Gmailの場合は、< >の中身が SMTP_ACCOUNT_USER と異なる場合、
-Gmail側で SMTP_ACCOUNT_USER へ変更されてしまいますので、存在しない
-メールアドレスにするという使い方はできないようです。
 
 
 ## MAIL_SUBJECT_IN

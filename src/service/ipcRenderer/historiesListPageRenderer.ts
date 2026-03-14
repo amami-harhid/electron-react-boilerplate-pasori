@@ -14,4 +14,16 @@ export const historiesPageService = {
 		const val = await ipcRenderer.asyncOnce<HistoriesMemberRow[]>(CHANNEL_REPLY);
 		return val;
 	},
+	/** 退室を無しにする */
+	changeToInRoom: async function(fcno: string, date: Date): Promise<boolean> {
+		ipcRenderer.send(CHANNEL_REQUEST, methods.changeToInRoom.name, fcno, date);
+		const val = await ipcRenderer.asyncOnce<boolean>(CHANNEL_REPLY);
+		return val;
+	},
+	/** 入室を無しにする */
+	changeToClearInRoom: async function(fcno:string, date: Date): Promise<boolean> {
+		ipcRenderer.send(CHANNEL_REQUEST, methods.changeToClearInRoom.name, fcno, date);
+		const val = await ipcRenderer.asyncOnce<boolean>(CHANNEL_REPLY);
+		return val;
+	}
 };
