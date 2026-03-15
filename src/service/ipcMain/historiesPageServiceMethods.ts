@@ -24,13 +24,14 @@ const getHistoriesByDate = async (date: Date, notInMember:boolean):Promise<Histo
 
 	}else{
 		const query =
-		`SELECT M.*, IFNULL(H.in_room,FALSE) AS in_room, IFNULL(H.date, '') AS date,
-		 IFNULL(H.date_in,'') AS date_in, IFNULL(H.date_out, '') AS date_out
+		`SELECT M.fcno, M.name, M.kana, M.mail, IFNULL(H.in_room,FALSE) AS in_room, IFNULL(H.date, '') AS date,
+		 IFNULL(H.date_in,'') AS date_in, IFNULL(H.date_out, '') AS date_out,
+		 IFNULL(H.date_time, '') AS date_time
 		 FROM members AS M
 		 LEFT OUTER JOIN histories AS H 
 		 ON H.fcno = M.fcno AND H.date = date(?) AND H.date_in <> ''
 		 WHERE M.soft_delete = FALSE
-		 ORDER BY M.kana ASC`;
+		 ORDER BY H.date_time ASC, M.kana ASC`;
 		const date_str = DateUtils.dateToSqlite3Date(date);
 		const rows = await dbAll<HistoriesMemberRow>(query, [date_str]);
 		return rows;

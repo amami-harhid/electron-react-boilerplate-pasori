@@ -13,7 +13,6 @@ type TABLE_ROW = {
 	no:number,
 	fcno:string,
 	name:string,
-	kana:string,
 	in:string,
 }
 type PAGEINFO = {
@@ -33,7 +32,6 @@ type MODAL_PAGE = {
 	title: string,
 	fcno: string,
 	name: string,
-	kana: string,
 	/* 現在の入室状況 */
 	in_room: boolean,
 	/* 現在の入室状況 */
@@ -89,7 +87,8 @@ export function HistoriesListPage() {
 	const [modalPage, setModalPage] = useState<MODAL_PAGE>(
 			{isUndoModalOpen:false, 
 				title: '',
-				fcno:'', name:'', kana:'', 
+				fcno:'', 
+				name:'',
 				in_room: false, 
 				now_room_status: ROOM_STATUS.UNKNOWN, 
 				next_room_status: ROOM_STATUS.UNKNOWN,
@@ -181,7 +180,7 @@ export function HistoriesListPage() {
 			title: '',
 			fcno: row.original.fcno,
 			name: row.original.name,
-			kana: row.original.kana,
+			//kana: row.original.kana,
 			in_room: false,
 			now_room_status: ROOM_STATUS.UNKNOWN,
 			next_room_status: ROOM_STATUS.UNKNOWN,
@@ -225,7 +224,7 @@ export function HistoriesListPage() {
 				title: '',
 				fcno: row.original.fcno,
 				name: row.original.name,
-				kana: row.original.kana,
+				//kana: row.original.kana,
 				in_room: false,
 				now_room_status: ROOM_STATUS.UNKNOWN,
 				next_room_status: ROOM_STATUS.UNKNOWN,
@@ -239,7 +238,7 @@ export function HistoriesListPage() {
 				// 入室中⇒入室無しへ
 				const undoIn = () => {
 					_modalPage.in_room = true;
-					_modalPage.title = '入室無しにしますか？';
+					_modalPage.title = '入室中を『入室未』にしますか？';
 					_modalPage.now_room_status = ROOM_STATUS.IN;
 					_modalPage.next_room_status = ROOM_STATUS.NOT_IN;
 					setModalPage( _modalPage );
@@ -257,7 +256,7 @@ export function HistoriesListPage() {
 				// 退出⇒入室中
 				const toIn = () => {
 					_modalPage.in_room = false;
-					_modalPage.title = '入室中にしますか？';
+					_modalPage.title = '退出済を『入室中』にしますか？';
 					_modalPage.now_room_status = ROOM_STATUS.OUT;
 					_modalPage.next_room_status = ROOM_STATUS.IN;
 					setModalPage( _modalPage );
@@ -276,7 +275,7 @@ export function HistoriesListPage() {
 			// 入室未⇒入室中
 			const toIn = () => {
 					_modalPage.in_room = false;
-					_modalPage.title = '入室中にしますか？';
+					_modalPage.title = '未入室を『入室中』にしますか？';
 					_modalPage.now_room_status = ROOM_STATUS.NOT_IN;
 					_modalPage.next_room_status = ROOM_STATUS.IN;
 					setModalPage( _modalPage );
@@ -321,14 +320,6 @@ export function HistoriesListPage() {
 			enableSorting: false,
 		},
 		{
-			accessorKey: 'kana',
-			header: 'カナ',
-			size: 150,
-			minSize: 150,
-			maxSize: 200,
-			enableSorting: false,
-		},
-		{
 			accessorKey: 'in',
 			header: '状態',
 			size: 50,
@@ -361,11 +352,11 @@ export function HistoriesListPage() {
 			const dateIn = (_dateIn == '00:00')? '**:**': _dateIn;
 			const _dateOut = (row.date_out)?((row.date_out.length<5)?'': row.date_out?.substring(0,5)): '';
 			const dateOut = (_dateOut == '23:59')? '**:**': _dateOut;
+			const _name = (row.name)? row.name+"\n"+`(${row.kana})`:''; 
 			const newRow:TABLE_ROW = {
 				no: newId,
 				fcno: row.fcno,
-				name: (row.name)?row.name:'',
-				kana: (row.kana)?row.kana:'',
+				name: _name,
 				in: (row.in_room)? `${IN_ROOM}${dateIn}`: (dateIn=='')? '' : 
 					(dateOut=="")? `${IN_ROOM}${dateIn}`:`${IN_ROOM}${dateIn}\n${OUT_ROOM}${dateOut}`
 			}
@@ -385,8 +376,7 @@ export function HistoriesListPage() {
 			const newRow:TABLE_ROW = {
 				no: newId,
 				fcno: row.fcno,
-				name: (row.name)?row.name:'',
-				kana: (row.kana)?row.kana:'',
+				name: (row.name)?row.name+"\n"+`(${row.kana})`:'',
 				in: ''
 			}
 			_data.push(newRow);
@@ -494,7 +484,7 @@ export function HistoriesListPage() {
 				</div>
 			</div>
 		</div>
-		{/* UNDOモーダル */}
+		{/* モーダル */}
 		<Modal
 			isOpen={modalPage.isUndoModalOpen}
 			onRequestClose={() => {
@@ -521,7 +511,9 @@ export function HistoriesListPage() {
 			}}
 			>
 			<h2 style={{margin:0}}>{modalPage.title}</h2>
-			<p></p>
+			<p>
+				<span style={{fontWeight:'bold'}}>[{modalPage.fcno}]</span>
+				<span style={{marginLeft:20}}>{modalPage.name}</span></p>
 			<div className="modal-button-container" style={{margin:5}}>
 				<ModalAlertButton onClick={()=>confirmNo()}
 						>いいえ</ModalAlertButton>
