@@ -110,10 +110,7 @@ const tryApi = (oAuth2Client: any ,refreshToken:string, accessToken:string):Prom
 		}catch(err){
 			logger.debug('userinfo.get.catch=', err)
 			const _error = err as OAuth2Error;
-			console.log(`_error.message=(${_error.message})`);
-			if(_error.message.startsWith('invalid_grant')){
-				console.log('# Error: invalid_grant')
-			}
+			logger.debug(`_error.message=(${_error.message})`);
 			_error.code = 999;
 			if(_error.code == 401) {
 				logger.debug('========== get user info error ==========');
