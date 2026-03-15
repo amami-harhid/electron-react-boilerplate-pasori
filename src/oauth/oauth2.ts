@@ -106,7 +106,7 @@ export type Tokens = {
 	expiry_date: number
 }
 export type OAuth2Cient = typeof google.OAuth2Client;
-export type OAuth2Error = {code: number};
+export type OAuth2Error = {code: number, message:string};
 export const oAuth2 = {
 
 	client: OAuth2.getOAuth2Client,

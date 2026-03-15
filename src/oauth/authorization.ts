@@ -65,6 +65,7 @@ export const authorization = async () :Promise<boolean>=> {
 	})
 	.catch((err)=>{
 		logger.debug('-----tryApi.catch-----')
+		logger.debug(err);
 		if(err.code == 401 || err.code == 400){
 			// tryApi で認証エラー、有効期限切れエラーが起きたときの対処
 			return requestOAuthCode(oAuth2Client);
@@ -109,6 +110,10 @@ const tryApi = (oAuth2Client: any ,refreshToken:string, accessToken:string):Prom
 		}catch(err){
 			logger.debug('userinfo.get.catch=', err)
 			const _error = err as OAuth2Error;
+			console.log(`_error.message=(${_error.message})`);
+			if(_error.message.startsWith('invalid_grant')){
+				console.log('# Error: invalid_grant')
+			}
 			_error.code = 999;
 			if(_error.code == 401) {
 				logger.debug('========== get user info error ==========');
@@ -119,6 +124,11 @@ const tryApi = (oAuth2Client: any ,refreshToken:string, accessToken:string):Prom
 			}else if(_error.code == 400){
 				// 400 : 認証エラー
 				const error = new AuthError("No granted");
+				error.code = 400;
+				return reject(error);
+			}else if(_error.message.startsWith('invalid_grant')){
+				// 認証エラー
+				const error = new AuthError("Invalid granted");
 				error.code = 400;
 				return reject(error);
 			}else{
