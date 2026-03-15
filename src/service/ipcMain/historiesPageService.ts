@@ -19,21 +19,32 @@ export function ipcMainHistoriesListPagePage() {
 		// IDMが紐づいたメンバーを取得する
 		if( command == methods.getHistoriesByDate.name ){
 			const date:Date = args[0];
-			const rows: HistoriesMemberRow[] = await methods.getHistoriesByDate(date);
+			const notInMember:boolean = args[1];
+			const rows: HistoriesMemberRow[] = await methods.getHistoriesByDate(date, notInMember);
 			event.reply(CHANNEL_REPLY, rows);
 			return;			
 		}
 		else if( command == methods.changeToInRoom.name) {
 			const fcno:string = args[0];
-			const date:Date = args[1];
-			const rslt = await methods.changeToInRoom(fcno, date);
+			const rslt = await methods.changeToInRoom(fcno);
 			event.reply(CHANNEL_REPLY, rslt);
 			return;
 		}
-		else if( command == methods.changeToClearInRoom.name) {
+		else if( command == methods.clearInRoom.name) {
 			const fcno:string = args[0];
-			const date:Date = args[1];
-			const rslt = await methods.changeToClearInRoom(fcno, date);
+			const rslt = await methods.clearInRoom(fcno);
+			event.reply(CHANNEL_REPLY, rslt);
+			return;		
+		}
+		else if( command == methods.changeToOutRoom.name) {
+			const fcno:string = args[0];
+			const rslt = await methods.changeToOutRoom(fcno);
+			event.reply(CHANNEL_REPLY, rslt);
+			return;		
+		}
+		else if( command == methods.backToInRoom.name) {
+			const fcno:string = args[0];
+			const rslt = await methods.backToInRoom(fcno);
 			event.reply(CHANNEL_REPLY, rslt);
 			return;		
 		}

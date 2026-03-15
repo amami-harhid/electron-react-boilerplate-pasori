@@ -227,9 +227,14 @@ export function MemberTrashedListPage () {
 					muiTableProps={{
 						className: 'member_appTable',
 					}}
-					enableRowActions
 					enableSorting
 					positionActionsColumn="last"
+					enableRowActions
+					displayColumnDefOptions={{
+						'mrt-row-actions': {
+							header: '操作', // Actionカラムのヘッダー名
+						}
+					}}
 					renderRowActions={({ row }) => (
 						<Box sx={{ display: 'flex', gap: '0.2rem' }}>
 							<Tooltip title="復元">

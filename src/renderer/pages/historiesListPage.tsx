@@ -1,9 +1,10 @@
-import { useState, useEffect} from "react";
+import { useState, useEffect, useRef} from "react";
 import { toast } from 'sonner';
 import Modal from 'react-modal';
 import { MaterialReactTable, type MRT_Row } from 'material-react-table';
-import { Box, Button, IconButton, Tooltip, styled } from '@mui/material';
+import { Box, Button, Checkbox, IconButton, Tooltip, styled } from '@mui/material';
 import UndoIcon from '@mui/icons-material/Undo';
+import RedoIcon from '@mui/icons-material/Redo';
 import * as DateUtils from '@/utils/dateUtils';
 import { historiesPageService } from "@/service/ipcRenderer/historiesListPageRenderer";
 import * as PasoriCard from '@/renderer/pages/pasoriCard/pasoriCard';
@@ -18,13 +19,27 @@ type TABLE_ROW = {
 type PAGEINFO = {
 	date: string,
 	tableData: TABLE_ROW[],
+	checkbox: T_CHECK_BOX[],
 }
+const ROOM_STATUS = {
+	UNKNOWN: 'UNKNOWN',
+	NOT_IN: 'NOT_IN',
+	IN : 'IN',
+	OUT: 'OUT',
+} as const
+type T_ROOM_STATUS = (typeof ROOM_STATUS)[keyof typeof ROOM_STATUS]
 type MODAL_PAGE = {
 	isUndoModalOpen: boolean,
+	title: string,
 	fcno: string,
 	name: string,
 	kana: string,
+	/* 現在の入室状況 */
 	in_room: boolean,
+	/* 現在の入室状況 */
+	now_room_status : T_ROOM_STATUS,
+	/* 次の入室状況 */
+	next_room_status: T_ROOM_STATUS,
 	date: Date,
 }
 const ModalAlertButton = styled(Button)(({ theme })=> ({
@@ -51,41 +66,91 @@ const ModalButton = styled(Button)(({ theme })=> ({
 		transform: "scale(1.05)"
 	}
 }));
+/** チェックボックス値 */
+const CHECK_BOX = {
+	NOT_IN_MEMBERS: 'NOT_IN_MEMBER',
+} as const 
+type T_CHECK_BOX = (typeof CHECK_BOX)[keyof typeof CHECK_BOX]
 
 /** 履歴一覧ページ */
 export function HistoriesListPage() {
+
+	const content = useRef(null);
+	const element = content.current
+	if(element){
+		Modal.setAppElement(element);
+	}
 	const toDay = new Date();
 	const toDayStr = DateUtils.dateToSqlite3Date(toDay);
-	const [pageInfo, setPageInfo] = useState<PAGEINFO>({date:toDayStr, tableData:[]});
-	const [modalPage, setModalPage] = useState<MODAL_PAGE>({isUndoModalOpen:false, fcno:'', name:'', kana:'', in_room: false, date: new Date()});
-	const confirmYes = async (in_room:boolean) => {
+	const [pageInfo, setPageInfo] = useState<PAGEINFO>({date:toDayStr, tableData:[], checkbox:[]});
+	const [modalPage, setModalPage] = useState<MODAL_PAGE>(
+			{isUndoModalOpen:false, 
+				title: '',
+				fcno:'', name:'', kana:'', 
+				in_room: false, 
+				now_room_status: ROOM_STATUS.UNKNOWN, 
+				next_room_status: ROOM_STATUS.UNKNOWN,
+				date: new Date()});
+	const confirmYes = async () => {
 		const fcno = modalPage.fcno;
-		const date = modalPage.date;
-		if(in_room){
-			const rslt = await historiesPageService.changeToClearInRoom(fcno, date);
-			if(rslt){
-				toast.success('入室をクリアしました');
-			}else{
-				toast.error('入室クリアできません');
+		const now_in_room = modalPage.now_room_status;
+		const next_status = modalPage.next_room_status; 
+		if(now_in_room == ROOM_STATUS.IN){
+			// 現在入室中
+			if(next_status == ROOM_STATUS.NOT_IN){
+				const rslt = await historiesPageService.clearInRoom(fcno);
+				if(rslt){
+					toast.success('入室をクリアしました');
+				}else{
+					toast.error('入室クリアできません');
+				}
 			}
+			else if(next_status == ROOM_STATUS.OUT){
+				const rslt = await historiesPageService.changeToOutRoom(fcno);
+				if(rslt){
+					toast.success('退出にしました');
+				}else{
+					toast.error('退出できません');
+				}
+			}
+		}else if(now_in_room == ROOM_STATUS.NOT_IN){
+			// 現在入室していない
+			if(next_status == ROOM_STATUS.IN) {
+				// 入室にする
+				const rslt = await historiesPageService.changeToInRoom(fcno);
+				if(rslt){
+					toast.success('入室中にしました');
+				}else{
+					toast.error('入室中に戻せません');
+				}
+			}
+
 		}else{
-			const rslt = await historiesPageService.changeToInRoom(fcno, date);
-			if(rslt){
-				toast.success('入室中にしました');
-			}else{
-				toast.error('入室中に戻せません');
+			// 現在退出済
+			if(next_status == ROOM_STATUS.IN) {
+				// 入室にする（戻す）
+				const rslt = await historiesPageService.backToInRoom(fcno);
+				if(rslt){
+					toast.success('入室中にしました');
+				}else{
+					toast.error('入室中に戻せません');
+				}
 			}
 		}
 		await pageRender();
 		const _modalPage = structuredClone(modalPage)
 		_modalPage.isUndoModalOpen = false;
 		_modalPage.in_room = false;
+		_modalPage.now_room_status = ROOM_STATUS.UNKNOWN;
+		_modalPage.next_room_status = ROOM_STATUS.UNKNOWN;
 		setModalPage(_modalPage);
 	}
 	const confirmNo = () => {
 		const _modalPage = structuredClone(modalPage)
 		_modalPage.isUndoModalOpen = false;
 		_modalPage.in_room = false;
+		_modalPage.now_room_status = ROOM_STATUS.UNKNOWN;
+		_modalPage.next_room_status = ROOM_STATUS.UNKNOWN;
 		setModalPage(_modalPage);
 	}
 	const isNotSameDate = (date1:Date, date2:Date) => {
@@ -97,9 +162,8 @@ export function HistoriesListPage() {
 			return true;
 		}
 	}
-	const undo = (row: MRT_Row<TABLE_ROW>) => {
+	const redo = (row: MRT_Row<TABLE_ROW>) => {
 		const selectDate = modalPage.date;
-		console.log(selectDate);
 		const toDay = new Date();
 		if(isNotSameDate(selectDate, toDay) ){
 			// 空表示
@@ -108,26 +172,74 @@ export function HistoriesListPage() {
 			);
 		}
 		const inStr = row.original.in;
-		if(inStr.length > 0){
-			const _modalPage:MODAL_PAGE = {
+		const _modalPage:MODAL_PAGE = {
+			isUndoModalOpen: true,
+			title: '',
+			fcno: row.original.fcno,
+			name: row.original.name,
+			kana: row.original.kana,
+			in_room: false,
+			now_room_status: ROOM_STATUS.UNKNOWN,
+			next_room_status: ROOM_STATUS.UNKNOWN,
+			date: modalPage.date,
+		}
+		if(inStr.endsWith('-')){
+			// 最後がハイフン  入室中⇒退出へ
+			const redoIn = () => {
+				_modalPage.in_room = true;
+				_modalPage.title = '退出にしますか？';
+				_modalPage.now_room_status = ROOM_STATUS.IN;
+				_modalPage.next_room_status = ROOM_STATUS.OUT;
+				setModalPage( _modalPage );
+			}			
+			return (
+				<Tooltip title="退出へ" arrow placement="top">
+					<IconButton color="error" onClick={() => redoIn()}>
+						<RedoIcon />
+					</IconButton>
+				</Tooltip>
+			);
+		}else{
+			return (
+				<></>
+			)
+		}
+	}
+	const undo = (row: MRT_Row<TABLE_ROW>) => {
+		const selectDate = modalPage.date;
+		const toDay = new Date();
+		if(isNotSameDate(selectDate, toDay) ){
+			// 空表示
+			return (
+				<></>
+			);
+		}
+		const inStr = row.original.in;
+		const _modalPage:MODAL_PAGE = {
 				isUndoModalOpen: true,
+				title: '',
 				fcno: row.original.fcno,
 				name: row.original.name,
 				kana: row.original.kana,
 				in_room: false,
+				now_room_status: ROOM_STATUS.UNKNOWN,
+				next_room_status: ROOM_STATUS.UNKNOWN,
 				date: modalPage.date,
-			}
-			console.log(_modalPage, inStr);
-			console.log("inStr.startsWith('-')=", inStr.startsWith('-'))
+		}
+		if(inStr.length > 0){
+			
 			if(inStr.startsWith('-') || inStr.startsWith('*')){
 				return (
 					<></>
 				);
 			}
 			else if(inStr.endsWith('-')){
-				// 最後がハイフン ⇒ 入室中
+				// 最後がハイフン  入室中⇒入室無しへ
 				const undoIn = () => {
 					_modalPage.in_room = true;
+					_modalPage.title = '入室無しにしますか？';
+					_modalPage.now_room_status = ROOM_STATUS.IN;
+					_modalPage.next_room_status = ROOM_STATUS.NOT_IN;
 					setModalPage( _modalPage );
 				}
 				return (
@@ -139,23 +251,42 @@ export function HistoriesListPage() {
 				)
 			}else{
 				// 退出済
-				// 最後がハイフン ⇒ 入室中へ
+				// 退出⇒入室中
 				const toIn = () => {
 					_modalPage.in_room = false;
+					_modalPage.title = '入室中にしますか？';
+					_modalPage.now_room_status = ROOM_STATUS.OUT;
+					_modalPage.next_room_status = ROOM_STATUS.IN;
 					setModalPage( _modalPage );
 				}
 				return (
 					<Tooltip title="入室中へ" arrow placement="top">
-						<IconButton color="error" onClick={() => toIn()}>
+						<IconButton onClick={() => toIn()}>
 							<UndoIcon />
 						</IconButton>
 					</Tooltip>
 				)
 			}
+
+		}else{
+			// 入室未
+			// 入室未⇒入室中
+			const toIn = () => {
+					_modalPage.in_room = false;
+					_modalPage.title = '入室中にしますか？';
+					_modalPage.now_room_status = ROOM_STATUS.NOT_IN;
+					_modalPage.next_room_status = ROOM_STATUS.IN;
+					setModalPage( _modalPage );
+			}
+			return (
+					<Tooltip title="入室中へ" arrow placement="top">
+						<IconButton color="error" onClick={() => toIn()}>
+							<RedoIcon />
+						</IconButton>
+					</Tooltip>
+			)
 		}
 	}
-
-
 
 	// Define columns
 	const columns = [
@@ -198,12 +329,21 @@ export function HistoriesListPage() {
 			minSize: 50,
 			maxSize: 50,
 			enableSorting: false,
-		}
+		},
 	];
 
+
 	/** 履歴をテーブル化 */
-	const historiesToTableData = async (date:Date):Promise<TABLE_ROW[]> => {
-		const rows:HistoriesMemberRow[] = await historiesPageService.getHistoriesByDate(date);
+	const historiesToTableData = async (date:Date, notInMember:boolean):Promise<TABLE_ROW[]> => {
+		if( notInMember === true ) {
+			return await historiesToTableDataNotInMember(date);
+
+		} else {
+			return await historiesToTableDataInMember(date);
+		}
+	}
+	const historiesToTableDataInMember = async (date:Date):Promise<TABLE_ROW[]> => {
+		const rows:HistoriesMemberRow[] = await historiesPageService.getHistoriesByDate(date, false);
 		const _data:TABLE_ROW[] = [];
 		for(const row of rows){
 			if(row.date == ''){
@@ -226,6 +366,26 @@ export function HistoriesListPage() {
 		}
 		return _data;
 	}
+	const historiesToTableDataNotInMember = async (date:Date):Promise<TABLE_ROW[]> => {
+		const rows:HistoriesMemberRow[] = await historiesPageService.getHistoriesByDate(date, true);
+		const _data:TABLE_ROW[] = [];
+		for(const row of rows){
+			if(row.date_in != ''){
+				// Historiesテーブルがあって入室中のとき
+				continue;
+			}
+			const newId = _data.length > 0 ? _data[_data.length - 1].no + 1 : 1;
+			const newRow:TABLE_ROW = {
+				no: newId,
+				fcno: row.fcno,
+				name: (row.name)?row.name:'',
+				kana: (row.kana)?row.kana:'',
+				in: ''
+			}
+			_data.push(newRow);
+		}
+		return _data;
+	}
 	/** 日付選択値が変更されたとき */
 	const handleInputChange = async (event: React.ChangeEvent<HTMLInputElement>)=>{
 		const date = event.target.valueAsDate;
@@ -239,15 +399,30 @@ export function HistoriesListPage() {
 
 	}
 	/** ページレンダリング */
-	const pageRender = async (date:Date=toDay) => {
+	const pageRender = async (date:Date=toDay, checkBox: T_CHECK_BOX[]=[]) => {
 		const _modalPage = structuredClone(modalPage);
 		_modalPage.date = (date)? date: new Date();
 		setModalPage(_modalPage);
+		const rows = await historiesToTableData(date, checkBox.includes(CHECK_BOX.NOT_IN_MEMBERS));
+		const _pageInfo = structuredClone(pageInfo);
 		const date_str = DateUtils.dateToSqlite3Date(date);
-		const rows = await historiesToTableData(date);
-		setPageInfo( {date:date_str, tableData: rows} );
+		_pageInfo.date = date_str;
+		_pageInfo.tableData = rows;
+		_pageInfo.checkbox = checkBox;
+		setPageInfo( _pageInfo );
 	}
-
+	const memberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const checkVal:T_CHECK_BOX = e.target.value as T_CHECK_BOX;
+		const checkBox:T_CHECK_BOX[] = []
+		if( e.target.checked ) {
+			checkBox.push(checkVal);
+			const _modalPage = structuredClone(modalPage);
+			_modalPage.date = new Date();
+			setModalPage(_modalPage);
+		}
+		const _date = new Date(pageInfo.date);
+		pageRender(_date, checkBox);
+	}
 	/** 初期化 */
 	const pageInit = () => {
 		// ページレンダリングされる
@@ -264,25 +439,42 @@ export function HistoriesListPage() {
 	return (
 		<>
 		<div className ="mainPanel">
-			<div className="modal_histories">
+			<div ref={content} className="modal_histories">
 				<div className="modal-content">
 					<label>日付を選択してください:
 						<input type="date" value={pageInfo.date} onChange={handleInputChange}/>
 						&nbsp;<button onClick={pageInit}>初期化</button>
 					</label>
 					<p className="hist_selectedDate">選択された日付: <span>{pageInfo.date}</span></p>
+					<div style={{marginBottom:10}}>
+					<label>
+						<input
+							type="checkbox"
+							value={CHECK_BOX.NOT_IN_MEMBERS}
+							checked={pageInfo.checkbox.includes(CHECK_BOX.NOT_IN_MEMBERS)}
+							onChange={memberChange}
+						/>
+						入室していないメンバーを表示する
+					</label>
+					</div>
 					<MaterialReactTable
 						columns={columns}
 						data={pageInfo.tableData}
 						muiTableProps={{
 							className: 'hist_appTable',
 						}}
-						enableRowActions
 						enableSorting
 						positionActionsColumn="last"
+						enableRowActions
+						displayColumnDefOptions={{
+							'mrt-row-actions': {
+								header: '操作', // Actionカラムのヘッダー名
+							}
+						}}
 						renderRowActions={({ row }) => (
 							<Box sx={{ display: 'flex', gap: '0.2rem' }}>
 								{undo(row)}
+								{redo(row)}
 							</Box>
 						)}
 					/>
@@ -315,12 +507,12 @@ export function HistoriesListPage() {
 				}
 			}}
 			>
-			<h2 style={{margin:0}}>{(modalPage.in_room)?'入室未に戻しますか？':'入室中に戻しますか？'}</h2>
+			<h2 style={{margin:0}}>{modalPage.title}</h2>
 			<p></p>
 			<div className="modal-button-container" style={{margin:5}}>
 				<ModalAlertButton onClick={()=>confirmNo()}
 						>いいえ</ModalAlertButton>
-				<ModalButton onClick={()=>confirmYes(modalPage.in_room)}
+				<ModalButton onClick={()=>confirmYes()}
 						>は&nbsp;&nbsp;い</ModalButton>
 			</div>
 		</Modal>
