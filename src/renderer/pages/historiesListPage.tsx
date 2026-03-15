@@ -72,6 +72,9 @@ const CHECK_BOX = {
 } as const 
 type T_CHECK_BOX = (typeof CHECK_BOX)[keyof typeof CHECK_BOX]
 
+const IN_ROOM = '(入)';
+const OUT_ROOM = '(出)';
+
 /** 履歴一覧ページ */
 export function HistoriesListPage() {
 
@@ -172,6 +175,7 @@ export function HistoriesListPage() {
 			);
 		}
 		const inStr = row.original.in;
+		const inStrArr = inStr.split("\n");
 		const _modalPage:MODAL_PAGE = {
 			isUndoModalOpen: true,
 			title: '',
@@ -183,27 +187,28 @@ export function HistoriesListPage() {
 			next_room_status: ROOM_STATUS.UNKNOWN,
 			date: modalPage.date,
 		}
-		if(inStr.endsWith('-')){
-			// 最後がハイフン  入室中⇒退出へ
-			const redoIn = () => {
-				_modalPage.in_room = true;
-				_modalPage.title = '退出にしますか？';
-				_modalPage.now_room_status = ROOM_STATUS.IN;
-				_modalPage.next_room_status = ROOM_STATUS.OUT;
-				setModalPage( _modalPage );
-			}			
-			return (
-				<Tooltip title="退出へ" arrow placement="top">
-					<IconButton color="error" onClick={() => redoIn()}>
-						<RedoIcon />
-					</IconButton>
-				</Tooltip>
-			);
-		}else{
-			return (
-				<></>
-			)
+		if(inStr.length > 0){
+			if(inStrArr.length == 1) {
+				// 入室中⇒退出へ
+				const redoIn = () => {
+					_modalPage.in_room = true;
+					_modalPage.title = '退出にしますか？';
+					_modalPage.now_room_status = ROOM_STATUS.IN;
+					_modalPage.next_room_status = ROOM_STATUS.OUT;
+					setModalPage( _modalPage );
+				}
+				return (
+					<Tooltip title="退出へ" arrow placement="top">
+						<IconButton color="error" onClick={() => redoIn()}>
+							<RedoIcon />
+						</IconButton>
+					</Tooltip>
+				);
+			}
 		}
+		return (
+			<></>
+		)
 	}
 	const undo = (row: MRT_Row<TABLE_ROW>) => {
 		const selectDate = modalPage.date;
@@ -227,14 +232,11 @@ export function HistoriesListPage() {
 				date: modalPage.date,
 		}
 		if(inStr.length > 0){
-			
-			if(inStr.startsWith('-') || inStr.startsWith('*')){
-				return (
-					<></>
-				);
-			}
-			else if(inStr.endsWith('-')){
-				// 最後がハイフン  入室中⇒入室無しへ
+			const inStrArr = inStr.split("\n");
+			console.log('inStrArr=',inStrArr);
+			if(inStrArr.length == 1) {
+				// 入室の表示
+				// 入室中⇒入室無しへ
 				const undoIn = () => {
 					_modalPage.in_room = true;
 					_modalPage.title = '入室無しにしますか？';
@@ -249,8 +251,9 @@ export function HistoriesListPage() {
 						</IconButton>
 					</Tooltip>
 				)
-			}else{
-				// 退出済
+			}
+			else if(inStrArr.length == 2){
+				// 入室+退室の表示
 				// 退出⇒入室中
 				const toIn = () => {
 					_modalPage.in_room = false;
@@ -286,6 +289,9 @@ export function HistoriesListPage() {
 					</Tooltip>
 			)
 		}
+		return (
+			<></>
+		)
 	}
 
 	// Define columns
@@ -360,7 +366,8 @@ export function HistoriesListPage() {
 				fcno: row.fcno,
 				name: (row.name)?row.name:'',
 				kana: (row.kana)?row.kana:'',
-				in: (row.in_room)? `${dateIn} -`: (dateIn=='')? '' : `${dateIn} - ${dateOut}`
+				in: (row.in_room)? `${IN_ROOM}${dateIn}`: (dateIn=='')? '' : 
+					(dateOut=="")? `${IN_ROOM}${dateIn}`:`${IN_ROOM}${dateIn}\n${OUT_ROOM}${dateOut}`
 			}
 			_data.push(newRow);
 		}
@@ -463,6 +470,12 @@ export function HistoriesListPage() {
 						muiTableProps={{
 							className: 'hist_appTable',
 						}}
+						muiTableBodyCellProps={{
+        					sx: {
+        						whiteSpace: 'pre-wrap', // 改行と折り返しを有効化
+        						wordBreak: 'break-word',
+        					},
+    					}}
 						enableSorting
 						positionActionsColumn="last"
 						enableRowActions
