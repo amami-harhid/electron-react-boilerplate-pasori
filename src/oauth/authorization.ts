@@ -46,7 +46,7 @@ export const authorization = async () :Promise<boolean>=> {
 			const refreshTokenExpiry = await oAuth2.config.getRefreshTokenExpiry();
 			const limit = Date.now() - 24*60*60*1000; // 24時間前
 			if(refreshTokenExpiry < limit) {
-				// およそ1日以内に期限切れの場合
+				// RefreshToken有効期限の前、およそ1日の場合
 				const error = new AuthError("Expired");
 				error.code = 401;
 				logger.debug('-----test refreshtoken expiry error 401')
@@ -111,7 +111,6 @@ const tryApi = (oAuth2Client: any ,refreshToken:string, accessToken:string):Prom
 			logger.debug('userinfo.get.catch=', err)
 			const _error = err as OAuth2Error;
 			logger.debug(`_error.message=(${_error.message})`);
-			_error.code = 999;
 			if(_error.code == 401) {
 				logger.debug('========== get user info error ==========');
 				// 401 : 有効期限切れ
@@ -124,13 +123,14 @@ const tryApi = (oAuth2Client: any ,refreshToken:string, accessToken:string):Prom
 				error.code = 400;
 				return reject(error);
 			}else if(_error.message.startsWith('invalid_grant')){
+				// code = 400 で拾えるはずだが念のためのきいてみる。
 				// 認証エラー
 				const error = new AuthError("Invalid granted");
 				error.code = 400;
 				return reject(error);
-			}else{
-				return reject(err);
 			}
+			_error.code = 999;
+			return reject(_error);
 		}
 	})
 }

@@ -37,9 +37,8 @@ export const TokensTbl = {
             if(row) {
                 if( expired_in == -1) {
                     const query = 
-                    `UPDATE tokens SET
-                    token = ?
-                    WHERE key = ?
+                    `UPDATE tokens SET token = ?
+                     WHERE key = ?
                     `;
                     logger.debug(`tokens replaceTable query=`,query);
                     const rslt = await exec.run(query,()=>{},[token, key]);
@@ -51,9 +50,8 @@ export const TokensTbl = {
                 else{
                     if( token == '') {
                         const query = 
-                        `UPDATE tokens SET
-                            expired_in = ?
-                        WHERE key = ?
+                        `UPDATE tokens SET expired_in = ?
+                         WHERE key = ?
                         `;
                         logger.debug(`tokens replaceTable query=`,query);
                         const rslt = await exec.run(query,()=>{},[expired_in, key]);
@@ -64,9 +62,8 @@ export const TokensTbl = {
 
                     }else{
                         const query = 
-                            `UPDATE tokens SET
-                            token = ?, expired_in = ?
-                            WHERE key = ?
+                            `UPDATE tokens SET token = ?, expired_in = ?
+                             WHERE key = ?
                             `;
                         logger.debug(`tokens replaceTable query=`,query);
                         const rslt = await exec.run(query,()=>{},[token, expired_in, key]);
@@ -79,7 +76,7 @@ export const TokensTbl = {
             }else{
                 const query = 
                 `INSERT INTO tokens 
-                (key, token, expired_in) VALUES ( ?, ?, ? )
+                 (key, token, expired_in) VALUES ( ?, ?, ? )
                 `;
                 logger.debug(`tokens replaceTable query=`,query);
                 const rslt = await exec.run(query,()=>{},[key, token, expired_in]);
